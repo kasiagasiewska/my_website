@@ -1,7 +1,7 @@
 # Site settings
 baseURL = "https://kasia-portfolio.netlify.app"
 languageCode = "en-us"
-title = "Forty"
+title = "Portfolio website for Kasia Gasiewska"
 theme = "forty"
 
 # Enter your tracking code to enable Google Analytics
@@ -19,8 +19,8 @@ disqusShortname = ""
   # CSS class.
 
   # Provide your metadata here.
-  name = "Your name"
-  description = "Your description"
+  name = "Kasia Gasiewska"
+  description = "My name is Kasia. I am Polish and I come from Gdansk."
 
   # Link custom assets relative to /static
   custom_css = []

@@ -111,7 +111,7 @@ disqusShortname = ""
 
     [[params.tiles.showcase]]
       title = "Climate Change"
-      subtitle = "Nisl Sed Aliquam"
+      subtitle = "Analysing temperature anomalies throughout the century"
       image = "pic04.jpg"
       url = "blogs/ipsum"
 

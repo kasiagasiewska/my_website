@@ -1,3 +1,16 @@
+---
+title: "Alcohol"
+author: "Kasia Gasiewska"
+date: "17.10.2020"
+output:
+  html_document:
+    theme: flatly
+    highlight: zenburn
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+    code_folding: show
+---
 
 
 
@@ -184,7 +197,7 @@ ggplot(top25_beer,
       coord_flip() + 
       theme_clean() + 
            NULL</code></pre>
-<p><img src="/projects/Alcohol_files/figure-html/beer_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p><img src="/projects/project_alcohol/Alcohol_files/figure-html/beer_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>desc_wine &lt;- drinks %&gt;% 
   arrange(desc(wine_servings))
 
@@ -200,7 +213,7 @@ ggplot(top25_wine,
   coord_flip() + 
   theme_clean() + 
   NULL</code></pre>
-<p><img src="/projects/Alcohol_files/figure-html/wine_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p><img src="/projects/project_alcohol/Alcohol_files/figure-html/wine_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>desc_spirit &lt;- drinks %&gt;% 
   arrange( desc(spirit_servings) )
 
@@ -216,7 +229,7 @@ ggplot (top25_spirit,
   coord_flip() + 
   theme_clean() + 
   NULL</code></pre>
-<p><img src="/projects/Alcohol_files/figure-html/spirit_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p><img src="/projects/project_alcohol/Alcohol_files/figure-html/spirit_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
 <blockquote>
 <p>In the first plot we can see that Namibia has the highest yearly consumption of beer per capita. Beer is one of Namibia’s most iconic commodity and their top quality brewing is a legacy of German colonialism.The second most beer-loving country is Czech Republic, known for its unique brewing methods and prevalent drinking culture.</p>
 </blockquote>

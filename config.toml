@@ -20,7 +20,7 @@ disqusShortname = ""
 
   # Provide your metadata here.
   name = "Kasia Gasiewska"
-  description = "My name is Kasia. I am Polish and I come from Gdansk."
+  description = "My name is Kasia and this is my portfolio."
 
   # Link custom assets relative to /static
   custom_css = []
@@ -37,8 +37,8 @@ disqusShortname = ""
 
   # Navigation Section
   [params.navigation]
-    title = "Forty"
-    subtitle = "By HTML5 Up"
+    title = "Kasia Gasiewska"
+    #subtitle = ""
     menu = "Menu"
     # Optional logo as brand stored in img/
     # logo = "logo.png"
@@ -48,15 +48,15 @@ disqusShortname = ""
       url = "#"
 
     [[params.navigation.links]]
-      name = "Blogs"
+      name = "Kasia's Projects"
       url = "blogs"
 
     [[params.navigation.links]]
-      name = "Generic Blog"
+      name = "Homework 1"
       url = "blogs/ipsum"
 
     [[params.navigation.links]]
-      name = "Elements"
+      name = "Homework 2"
       url = "elements.html"
 
     # Add custom links here by uncommenting code below. To remove links just delete
@@ -81,8 +81,8 @@ disqusShortname = ""
   [params.banner]
     # To change the background image on the homepage banner, replace 'banner.jpg' in
     # the 'static/img' folder.
-    title = "Hi, my name is Forty"
-    subtitle = "A RESPONSIVE SITE TEMPLATE DESIGNED BY HTML5 UP\nAND RELEASED UNDER THE CREATIVE COMMONS."
+    title = "Hi, my name is Kasia"
+    subtitle = "THIS BEAUTIFUL PAGE CONTAINS VARIOUS PROJECTS I WORKED ON\nDURING THE AMAZING DATA ANALYTICS COURSE!"
     buttonText = "Get Started"
 
 

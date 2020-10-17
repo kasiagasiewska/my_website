@@ -101,7 +101,7 @@ disqusShortname = ""
       title = "Alcohol Consumption"
       subtitle = "Which countries consume the most alcohol?"
       image = "pic02.jpg"
-     url = "projects/project_alcohol"
+     url = "/Users/kasia/Desktop/LBS/Data Analytics/my_website/content/projects/project_alcohol"
 
     [[params.tiles.showcase]]
       title = "Trump's Approval Margins"

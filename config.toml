@@ -92,14 +92,14 @@ disqusShortname = ""
     # Display your showcases here.
     
     [[params.tiles.showcase]]
-      title = "Alcohol Consumption"
-      subtitle = "Which countries consume the most alcohol?"
+      title = "Stock returns"
+      subtitle = "Exploring risk and return relationship for selected stocks"
       image = "pic01.jpg"
       url = "blogs/aliquam"
 
     [[params.tiles.showcase]]
-      title = "Stock returns"
-      subtitle = "Exploring risk and return relationship for selected stocks"
+      title = "Alcohol Consumption"
+      subtitle = "Which countries consume the most alcohol?"
       image = "pic02.jpg"
      url = "blogs/tempus"
 

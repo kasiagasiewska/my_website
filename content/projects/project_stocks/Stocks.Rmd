@@ -1,5 +1,5 @@
 ---
-title: "Alcohol"
+title: "Stocks"
 author: "Kasia Gasiewska"
 date: "17.10.2020"
 output:
@@ -31,96 +31,156 @@ knitr::opts_chunk$set(
 
 ```{r load-libraries, warning=FALSE, message=FALSE, echo=FALSE}
 library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
-library(mosaic)
-library(ggthemes)
-library(lubridate)
-library(fivethirtyeight)
 library(here)
-library(skimr)
-library(janitor)
-library(vroom)
 library(tidyquant)
 ```
 
-# Where Do People Drink The Most Beer, Wine And Spirits?
+# Returns of financial stocks
 
-Back in 2014, [fivethiryeight.com](https://fivethirtyeight.com/features/dear-mona-followup-where-do-people-drink-the-most-beer-wine-and-spirits/) published an article on alchohol consumption in different countries. 
-
-```{r, load_alcohol_data}
-library(fivethirtyeight)
-data(drinks)
+```{r load_nyse_data, message=FALSE, warning=FALSE}
+nyse <- read_csv(here::here("data","nyse.csv"))
+glimpse(nyse)
+skim(nyse)
 ```
 
-We have one column with character data which contains country names and four columns with numerical data which contains the amount of each type of alcohol consumed in these countries. There are no missing variables.
+## Creating a graph to summarise the companies by sector
 
-```{r glimpse_skim_data}
-glimpse(drinks)
-skim(drinks)
-```
+```{r companies_per_sector}
 
-```{r beer_plot}
-desc_beer <- drinks %>% 
-  arrange(desc(beer_servings))
-
-top25_beer <- head (desc_beer, 25)
-
-ggplot(top25_beer,
-       aes(x = reorder (country, beer_servings),
-           y = beer_servings)) + 
-      geom_col(fill = "goldenrod3") + 
-      labs(x = "Country", 
-           y = "Beer Servings", 
-           title="Top 25 Beer Consuming Countries") + 
-      coord_flip() + 
-      theme_clean() + 
-           NULL
+#Showing a table of NYSE companies grouped by sector, in descending order
+companies_by_sector <- nyse %>%
+  group_by(sector) %>%
+  summarise(number_of_companies = n()) %>%
+  arrange(desc(number_of_companies))
+companies_by_sector
 
 ```
 
-```{r wine_plot}
-
-desc_wine <- drinks %>% 
-  arrange(desc(wine_servings))
-
-top25_wine <- head (desc_wine, 25)
-
-ggplot(top25_wine,
-       aes(x=reorder (country, wine_servings),
-           y=wine_servings)) + 
-  geom_col(fill = "maroon") + 
-  labs(x = "Country", 
-       y = "Wine Servings", 
-       title = "Top 25 Wine Consuming Countries") + 
-  coord_flip() + 
-  theme_clean() + 
-  NULL
-
+```{r, plotting}
+#Creating a graph of NYSE companies grouped by sector
+ggplot(companies_by_sector, 
+       aes (x = number_of_companies,
+            y = reorder (sector,number_of_companies))) + 
+  labs(title = "Companies in the NYSE by sector",
+       y = "Sector", 
+       x = "number of companies") + 
+  geom_col() + 
+  theme_economist_white() + 
+  scale_x_continuous(expand = c(0,0))
 
 ```
 
-```{r spirit_plot}
+## Finding stock prices for 8 securities
 
-desc_spirit <- drinks %>% 
-  arrange( desc(spirit_servings) )
+```{r, choosing_stocks}
+myStocks <- c("AAPL","JPM","DIS","DPZ","ANF","TSLA","XOM","SPY" ) %>%
+  tq_get(get  = "stock.prices",
+         from = "2010-01-01",
+         to   = "2020-09-25") %>%
+  group_by(symbol) 
 
-top25_spirit <- head(desc_spirit,25)
+# examine the structure of the resulting data frame
+myStocks %>%
+  glimpse
+```
 
-ggplot (top25_spirit,
-        aes(x = reorder(country, spirit_servings),
-            y = spirit_servings)) + 
-  geom_col(fill="grey") + 
-  labs(x = "Country", 
-       y="Spirit Servings", 
-       title="Top 25 Spirit Consuming Countries") + 
-  coord_flip() + 
-  theme_clean() + 
-  NULL
+```{r get_price_data, message=FALSE, warning=FALSE, cache=TRUE}
+
+#Calculating daily returns
+myStocks_daily_returns <- myStocks %>%
+  tq_transmute(select     = adjusted, 
+               mutate_fun = periodReturn, 
+               period     = "daily", 
+               type       = "log",
+               col_rename = "daily_returns",
+               cols = c(nested.col))
+
+#Calculating monthly  returns
+myStocks_monthly_returns <- myStocks %>%
+  tq_transmute(select     = adjusted, 
+               mutate_fun = periodReturn, 
+               period     = "monthly", 
+               type       = "arithmetic",
+               col_rename = "monthly_returns",
+               cols = c(nested.col)) 
+
+#Calculating yearly returns
+myStocks_annual_returns <- myStocks %>%
+  group_by(symbol) %>%
+  tq_transmute(select     = adjusted, 
+               mutate_fun = periodReturn, 
+               period     = "yearly", 
+               type       = "arithmetic",
+               col_rename = "yearly_returns",
+               cols = c(nested.col))
+
+#Printing the returns calculated above
+myStocks_daily_returns
 
 ```
 
->In the first plot we can see that Namibia has the highest yearly consumption of beer per capita. Beer is one of Namibia's most iconic commodity and their top quality brewing is a legacy of German colonialism.The second most beer-loving country is Czech Republic, known for its unique brewing methods and prevalent drinking culture. 
+## Summarising monthly returns
 
->The second plot, representing wine consumption,  shows that French and Portugese drink the most wine. It is not very suprising given these are one of the most well known wine producing countries in the world. 
+```{r summarise_monthly_returns}
 
->Last but not least, looking at the third plot we can see that Grenada and Belarus are the most spirit-loving countries. We can safely assume that Grenadians prefer to drink rum while Belarusians enjoy their vodka.
+monthly_returns <- myStocks_monthly_returns %>%
+  summarise(mean_return = mean(monthly_returns, 
+                               na.rm=TRUE), 
+            median_return = median (monthly_returns,
+                                    na.rm=TRUE),
+            max_return = max (monthly_returns,
+                              na.rm=TRUE),
+            min_return = min (monthly_returns,
+                              na.rm=TRUE),
+            sd_return = sd (monthly_returns, 
+                            na.rm=TRUE))
+monthly_returns
 
+```
+
+## Plotting a density plot for each stock
+
+```{r density_monthly_returns}
+
+ggplot (myStocks_monthly_returns, 
+        aes(x=monthly_returns)) +
+  geom_density (fill = "lightgreen", 
+                alpha = 0.6) +
+  labs (title = "Monthly returns of portfolio since 01 January 2010",
+        x = "Monthly returns",
+        y = "Density") +
+  scale_x_continuous (breaks = scales::pretty_breaks(n = 8)) +
+  scale_y_continuous (breaks = scales::pretty_breaks(n = 8)) + 
+  facet_wrap(~symbol, 
+             scales='fixed') +
+  theme_clean()
+
+```
+
+> We can infer that Tesla (TSLA) is the most risky stock given it has the highest standard deviation, displayed by its monthly returns having the fattest tails and shortest peak at the mean value. By contrast, SPY (S&P500 ETF) appears the least risky stock given it displays the lowest standard deviation when comparing monthly returns.
+
+## Plotting risk and reward for a stock
+
+```{r risk_return_plot}
+
+library(ggrepel)
+
+risk_return <- ggplot (monthly_returns, 
+                       aes (y = mean_return,
+                            x=sd_return,
+                            label = symbol)) + 
+  geom_point(color = "blue")
+
+p <- risk_return + 
+  geom_text_repel(aes (label = symbol)) + 
+  labs(title = "Risk-Reward Tradeoff for Stocks", 
+       x="Standard Deviation of Return",
+       y = "Expected Monthly Return") + 
+  geom_smooth(method=lm) + 
+  theme_calc()
+
+p
+
+```
+
+> From the graph we can see that ANF is the furthest below the trend line, indicating that its returns are much less than expected given the risk a shareholders bears when holding this stock. On the other hand, DPZ seems to strongly outperform given its riskiness.

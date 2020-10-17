@@ -92,7 +92,7 @@ disqusShortname = ""
     # Display your showcases here.
     
     [[params.tiles.showcase]]
-      title = "Alcohol"
+      title = "Alcohol Consumption"
       subtitle = "Which countries consume the most alcohol?"
       image = "pic01.jpg"
       url = "blogs/aliquam"

@@ -95,13 +95,13 @@ disqusShortname = ""
       title = "Stock Returns"
       subtitle = "Exploring risk and return relationship for selected stocks"
       image = "pic01.jpg"
-      url = "/Users/kasia/Desktop/LBS/Data Analytics/my_website/content/projects/project_stocks"
+      url = "projects/project_stocks"
 
     [[params.tiles.showcase]]
       title = "Alcohol Consumption"
       subtitle = "Which countries consume the most alcohol?"
       image = "pic02.jpg"
-     url = "/Users/kasia/Desktop/LBS/Data Analytics/my_website/content/projects/project_alcohol"
+     url = "projects/project_alcohol"
 
     [[params.tiles.showcase]]
       title = "Trump's Approval Margins"

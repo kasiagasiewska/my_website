@@ -92,7 +92,7 @@ disqusShortname = ""
     # Display your showcases here.
     
     [[params.tiles.showcase]]
-      title = "Stock returns"
+      title = "Stock Returns"
       subtitle = "Exploring risk and return relationship for selected stocks"
       image = "pic01.jpg"
       url = "blogs/aliquam"
@@ -104,13 +104,13 @@ disqusShortname = ""
      url = "blogs/tempus"
 
     [[params.tiles.showcase]]
-      title = "Magna"
-      subtitle = "Lorem Etiam Nullam"
+      title = "Trump's Approval Margins"
+      subtitle = "Estimating Net Approval (approve-disapprove) for Donald Trump"
       image = "pic03.jpg"
       url = "blogs/magna"
 
     [[params.tiles.showcase]]
-      title = "Ipsum"
+      title = "Climate Change"
       subtitle = "Nisl Sed Aliquam"
       image = "pic04.jpg"
       url = "blogs/ipsum"

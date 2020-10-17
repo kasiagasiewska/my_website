@@ -48,16 +48,16 @@ disqusShortname = ""
       url = "#"
 
     [[params.navigation.links]]
-      name = "Kasia's Projects"
+      name = "Regression Project"
       url = "blogs"
 
-    [[params.navigation.links]]
-      name = "Homework 1"
-      url = "blogs/ipsum"
+    #[[params.navigation.links]]
+      #name = "Homework 1"
+      #url = "blogs/ipsum"
 
-    [[params.navigation.links]]
-      name = "Homework 2"
-      url = "elements.html"
+    #[[params.navigation.links]]
+      #name = "Homework 2"
+      #url = "elements.html"
 
     # Add custom links here by uncommenting code below. To remove links just delete
     # the [[params.navigation.links]] map associated with that link. Copy and paste
@@ -82,7 +82,7 @@ disqusShortname = ""
     # To change the background image on the homepage banner, replace 'banner.jpg' in
     # the 'static/img' folder.
     title = "Hi, my name is Kasia"
-    subtitle = "THIS BEAUTIFUL PAGE CONTAINS VARIOUS PROJECTS I WORKED ON DURING THE AMAZING DATA ANALYTICS COURSE!"
+    subtitle = "THIS BEAUTIFUL PAGE CONTAINS DIFFERENT PROJECTS I WORKED ON DURING THE AMAZING DATA ANALYTICS COURSE!"
     buttonText = "Get Started"
 
 
@@ -101,7 +101,7 @@ disqusShortname = ""
       title = "Tempus"
       subtitle = "Feugiat Amet Tempus"
       image = "pic02.jpg"
-      url = "blogs/tempus"
+     url = "blogs/tempus"
 
     [[params.tiles.showcase]]
       title = "Magna"
@@ -172,22 +172,22 @@ disqusShortname = ""
     # by copying the corresponding map with frontmatter code.
     [[params.contact.email]]
     title = "Email"
-    email = "example@domain.com"
+    email = "kgasiewska.mfa2021@london.edu"
 
     [[params.contact.phone]]
     title = "Phone"
-    phone = "(000) 000-0000 x1234"
+    phone = "(0) 7599123456"
 
     [[params.contact.address]]
     title = "Address"
-    street = "Street"
-    city = "City, ST 00000"
-    country = "Country"
+    street = "Regent's Park"
+    city = "London, NW1 4SA"
+    country = "United Kingdom"
 
   # Footer section
   [params.footer]
     enable = true
-    copyright = "Company Name"
+    copyright = "KasiaG Ltd."
 
     # Uses font awesome icons
     [[params.footer.social]]
@@ -212,7 +212,7 @@ disqusShortname = ""
 
     [[params.footer.social]]
       icon = "fa-linkedin"
-      url= "https://www.linkedin.com"
+      url= "https://www.linkedin.com/in/kasia-gasiewska-9a3506133/"
       label = "LinkedIn"
 
     [[params.footer.quicklinks]]

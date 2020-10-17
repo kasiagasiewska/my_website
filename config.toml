@@ -101,13 +101,13 @@ disqusShortname = ""
       title = "Alcohol Consumption"
       subtitle = "Which countries consume the most alcohol?"
       image = "pic02.jpg"
-     url = "blogs/tempus"
+     url = "blogs/Alcohol"
 
     [[params.tiles.showcase]]
       title = "Trump's Approval Margins"
       subtitle = "Estimating Net Approval for Donald Trump"
       image = "pic03.jpg"
-      url = "blogs/magna"
+      url = "blogs/Trump"
 
     [[params.tiles.showcase]]
       title = "Climate Change"

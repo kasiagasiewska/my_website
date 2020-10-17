@@ -105,7 +105,7 @@ disqusShortname = ""
 
     [[params.tiles.showcase]]
       title = "Trump's Approval Margins"
-      subtitle = "Estimating Net Approval (approve-disapprove) for Donald Trump"
+      subtitle = "Estimating Net Approval for Donald Trump"
       image = "pic03.jpg"
       url = "blogs/magna"
 

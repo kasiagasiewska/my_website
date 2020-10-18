@@ -11,6 +11,7 @@ slug: ipsum
 title: Ipsum
 ---
 
+
 ```{r, setup}
 knitr::opts_chunk$set(
   message = FALSE, 

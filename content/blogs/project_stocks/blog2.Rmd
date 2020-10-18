@@ -31,7 +31,14 @@ knitr::opts_chunk$set(
 
 ```{r load-libraries, warning=FALSE, message=FALSE, echo=FALSE}
 library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(lubridate)
+library(fivethirtyeight)
 library(here)
+library(skimr)
+library(janitor)
+library(vroom)
 library(tidyquant)
 ```
 

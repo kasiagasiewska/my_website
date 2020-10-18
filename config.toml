@@ -95,7 +95,7 @@ disqusShortname = ""
       title = "Stock Returns"
       subtitle = "Exploring risk and return relationship for selected stocks"
       image = "pic01.jpg"
-      url = "projects/project_stocks"
+      url = "blogs/Stocks"
 
     [[params.tiles.showcase]]
       title = "Alcohol Consumption"
@@ -107,7 +107,7 @@ disqusShortname = ""
       title = "Trump's Approval Margins"
       subtitle = "Estimating Net Approval for Donald Trump"
       image = "pic03.jpg"
-      url = "projects/project_trump"
+      url = "blogs/Trump"
 
     [[params.tiles.showcase]]
       title = "Climate Change"

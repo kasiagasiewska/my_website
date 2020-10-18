@@ -95,7 +95,7 @@ disqusShortname = ""
       title = "Stock Returns"
       subtitle = "Exploring risk and return relationship for selected stocks"
       image = "pic01.jpg"
-      url = "blogs/Stocks"
+      url = "blogs/project_stocks"
 
     [[params.tiles.showcase]]
       title = "Alcohol Consumption"

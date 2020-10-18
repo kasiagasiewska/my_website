@@ -5,8 +5,8 @@ categories:
 date: "2017-10-31T21:28:43-05:00"
 description: ""
 draft: false
-image: pic011.jpg
+image: pic05.jpg
 keywords: ""
-slug: ipsum
-title: Alcohol Comsumption
+slug: alcohol
+title: Alcohol Consumption
 ---

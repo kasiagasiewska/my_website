@@ -104,7 +104,7 @@ disqusShortname = ""
       title = "Trump's Approval Margins"
       subtitle = "Estimating Net Approval for Donald Trump"
       image = "pic03.jpg"
-      url = "blogs/Trump"
+      url = "blogs/project_trump"
 
     [[params.tiles.showcase]]
       title = "Climate Change"

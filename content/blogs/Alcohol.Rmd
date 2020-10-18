@@ -1,16 +1,16 @@
 ---
-title: "Alcohol"
-author: "Kasia Gasiewska"
-date: "17.10.2020"
-output:
-  html_document:
-    theme: flatly
-    highlight: zenburn
-    number_sections: yes
-    toc: yes
-    toc_float: yes
-    code_folding: show
+categories:
+- ""
+- ""
+date: "2020-10-17
+description: "Alcohol"
+draft: false
+image: pic10.jpg
+keywords: ""
+slug: alcohol
+title: Alcohol consumption
 ---
+
 
 ```{r, setup}
 knitr::opts_chunk$set(

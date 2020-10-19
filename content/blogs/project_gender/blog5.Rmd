@@ -47,159 +47,194 @@ library(kableExtra)
 
 # Omega Group plc- Pay Discrimination
 
-At the last board meeting of Omega Group Plc., the headquarters of a large multinational company, the issue was raised that women were being discriminated in the company, in the sense that the salaries were not the same for male and female executives. A quick analysis of a sample of 50 employees (of which 24 men and 26 women) revealed that the average salary for men was about 8,700 higher than for women. This seemed like a considerable difference, so it was decided that a further analysis of the company salaries should be conducted. 
+Scenario: A sample of 50 employees (24 men, 26 women) at Omega Group Plc showed a 8,700 difference in average salary for men compared to women. 
 
-Our team carried out the analysis to find out whether there is indeed a significant difference between the salaries of men and women, and whether the difference is due to discrimination or whether it is based on another, possibly valid, determining factor. 
+We are going to investigate whether this marked difference is indeed significant and whether there is an observable factor (such as experience) that could explain the difference.
+
+## Loading the data
 
 ```{r load_omega_data}
 omega <- read_csv(here::here("data", "omega.csv"))
 glimpse(omega) # examine the data frame
 ```
 
-
-## Is there a significant difference between the salaries of the male and female executives?
+## Relationship Salary - Gender ?
 
 ```{r, confint_single_valiables}
 # Summary Statistics of salary by gender
-mosaic::favstats (salary ~ gender, data=omega)
+gender_dataframe <- mosaic::favstats (salary ~ gender, data=omega)
 
 # Dataframe with two rows (male-female) and having as columns gender, mean, SD, sample size, 
 # the t-critical value, the standard error, the margin of error, 
 # and the low/high endpoints of a 95% confidence interval
-statistics<-omega%>%
-select(salary,gender)%>%
-  group_by(gender)%>%
-  summarise(mean = mean(salary),
-            SD = sd(salary),
-            SampleSize = n(),
-            t_crit = qt(0.975,SampleSize-1),
-            SE = SD/sqrt(SampleSize),
-            MarginError = t_crit*SE,
-            LowBound = mean - MarginError,
-            HighBound = mean + MarginError)
-statistics
-
+gender_dataframe2 <- gender_dataframe %>%
+  mutate(t_crit =qt(0.975,n-1),
+         SE = sd/sqrt(n),
+         ME = t_crit*SE,
+         lower = mean - ME,
+         upper = mean + ME)
+select(gender_dataframe2,-min, -Q1, -median, -Q3, -max, -missing)
 ```
 
-> From the data obtained, we can observe that the confidence intervals do not overlap. Hence, we can conclude that there is a significant difference between the salaries of male and female executives. 
+## Comment
+We can conclude that based on the dataset above, there is a significant difference between the salaries paid to men and women. We can be 95% certain of this because, at this significance level, the two different confidence intervals do not overlap. Therefore it is very unlikely that the difference in salary averages paid to men and women occured by coincidence.
+
+Next, we will conduct a hypothesis test to assess whether our null hypothesis, that salary averages of men and women are not significantly different, is accepted or rejected.
+
+```{r, hypothesis_testing}
+# hypothesis testing using t.test() 
+t.test(salary ~ gender, data=omega)
+```
 
 
-```{r, hypothesis_testing_salary_gender}
-# Hypothesis testing using t.test() 
-t.test(salary ~ gender, data = omega)
+```{r, hypothesis_testing_boostrap}
+# hypothesis testing using infer package, firstly creating a bootstrap simulation
+set.seed(1234)
+salarygenderbootstrap <- omega %>%
+  # Specifying variable of interest:
+  specify(salary ~ gender) %>%
+  # Set our null hypothesis as the two variables are independent:
+  hypothesise(null = "independence") %>%
+  # Creating a bootstrap simulation
+  generate( reps = 1000,
+            type = "permute") %>%
+  calculate(stat = "diff in means",
+            order = c("male","female"))
+#salarygenderbootstrap
 
-# Hypothesis testing using infer package
+#Percentile method with infer package
+cipercentile <- salarygenderbootstrap %>%
+get_confidence_interval(level = 0.95,type="percentile")
+cipercentile
 
-#Initialize the test
-init_sal_null<-omega%>%
-specify(salary ~ gender)%>%
-calculate(stat="diff in means",order=c("female","male")) 
-
-#Simulate the test on the null distribution, which we will save as null
-salaries_null_world<-omega%>%
-  specify(salary ~ gender)%>%
-  hypothesize(null="independence")%>%
-  generate(reps=1000,type="permute")%>%
-  calculate(stat="diff in means",order=c("female","male"))
-
-#Visualize the null distribution and get the p value
-salaries_null_world %>% visualize() +
-  shade_p_value(obs_stat = init_sal_null, direction = "two-sided")+
+# Visualising bootstrap
+salarygenderbootstrap %>%
+  visualise() +
+  geom_linerange(aes(gender_dataframe2[2,7]-gender_dataframe2[1,7],
+                     ymin=0,
+                     ymax=Inf),
+                 size=2,
+                 color="red")+
+                   annotate("text",x=6000,y=150,label=paste("Observation: $",round(gender_dataframe2[2,7]-gender_dataframe2[1,7],2)))+
   
-  #Customize the plot
-  labs(x="Difference between mean salary of women and men",y="Count",title="Is there a significant difference between men and women's salaries?",subtitle="Null hypothesis distribution and p-value")+theme_clean()
+  # Shading the confidence interval on our bootstrap simulation
+  shade_confidence_interval(endpoints = cipercentile,colour="green",fill="lightblue")+
+  
+theme_clean()+
+scale_x_continuous(labels=scales::dollar_format())+
+  labs(x="Salary Gap",
+       y="Count",
+       title="Omega's Gender Pay Gap",
+       subtitle="Bootstrap simulation of gender pay gap",
+       caption="Source: Omega Group plc Salary Data") +NULL
 
-#Get the numerical value for p
-salaries_null_world %>% get_p_value(obs_stat = init_sal_null, direction = "two_sided")
+# Finding the p-value, i.e. the probability of observing this sample mean by pure coincidence
+salarygenderbootstrap %>%
+  get_pvalue(obs_stat = gender_dataframe2[2,7]-gender_dataframe2[1,7],direction="both")
 ```
 
-> From the hypothesis testing, we are more than 95% confident that the null hypothesis is untrue. A significant difference between the male and female executive salaries has been confirmed in 3 different ways: the hypothesis testing using t.test(), the plot of the null hypothesis distribution with a red line corresponding to the p-threshold (as we can visually observe the line is very far away from 0), and a p<0.05. However, we cannot affirm that this significant difference is due to discrimination as there may be some other factors involved. Finding out the true causes of the salary gap requires further analyses.
+0.2% chance that this is a coincidence, reject the null hypothesis.  However, we cannot affirm that this significant salary difference is due to discrimination as there may be some other factors involved. Finding out the true causes of the salary gap requires further analyses.
 
-## Is there a significant difference between the experience of the male and female executives?
+
+## Relationship Experience - Gender?
+
+The gender pay gap is definitely clear, but we now need to find out why. We learn that on average, men in the sample have 21 years of experience whereas women have 7 years. Could the level of experience be a strong driver of salary?
+
+```{r, experience_summarystats}
+# Summary Statistics of salary by gender
+gender_dataframe4 <- favstats (experience ~ gender, data=omega)
+gender_dataframe4
+```
+
+```{r, experience_ttest}
+# Conducting a t test for the relationship between gender and experience 
+t.test(experience ~ gender, data = omega)
+```
+
+Our p value is virtually zero, and our 95% confidence interval does not include a difference of zero between the two means. Therefore, there is a significant difference between the experience between men and women.
 
 ```{r, experience_stats}
-# Summary Statistics of experience by gender
-favstats (experience ~ gender, data=omega)
-
-#Calculate additional key statistics and confidence intervals
-statistics<-omega%>%
-select(experience,gender)%>%
-  group_by(gender)%>%
-  summarise(mean = mean(experience),
-            SD = sd(experience),
-            SampleSize = n(),
-            t_crit = qt(0.975,SampleSize-1),
-            SE=SD/sqrt(SampleSize),
-  MarginError=t_crit*SE,LowBound=mean-MarginError,HighBound=mean+MarginError)
-statistics
-```
-
-> The 95% confidence intervals do not overlap. Hence, we can conclude that there is a significant difference in the experience of female and male executives.
-Further tests based on null hypothesis are conducted below.  
-
-
-```{r, hypothesis_testing_experience}
-# Hypothesis testing using t.test() 
-t.test(experience ~ gender, data = omega)
-
-# Hypothesis testing using infer package
-#Initialize the test
-init_exp_null <- omega %>%
-specify(experience ~ gender)%>%
-calculate(stat="diff in means",order=c("female","male")) 
-
-#Simulate the test on the null distribution, which we will save as experience_null_world
-experience_null_world <- omega %>%
+set.seed(5678)
+gender_experience <- omega %>%
   specify(experience ~ gender) %>%
-  hypothesize(null="independence") %>%
-  generate(reps=1000,type="permute") %>%
-  calculate(stat="diff in means",order=c("male","female"))
+  hypothesise(null = "independence") %>%
+  generate(reps=1000,
+           type="permute") %>%
+  
+  calculate(stat = "diff in means",
+            order = c("male","female"))
 
-#Visualize the null distribution and get the p value
-experience_null_world %>% visualize() +
-  shade_p_value(obs_stat = init_exp_null, direction = "two-sided")+
- 
-   #Customize the plot
-  labs(x="Difference between mean experience of women and men",
+# Finding the 95% confidence interval using percentile method
+cigenderexperience <- gender_experience %>%
+  get_confidence_interval(level = 0.95, type="percentile")
+cigenderexperience
+
+# Visualising bootstrap
+gender_experience %>%
+  visualise() +
+  geom_linerange(aes(gender_dataframe4[2,7]- gender_dataframe4[1,7],
+                     ymin=0,
+                     ymax=Inf),
+                 size=2,
+                 color="red")+
+                   annotate("text",x=9,y=150,label=paste("Observation: ",round(gender_dataframe4[2,7]-gender_dataframe4[1,7],2)))+
+  
+  # Highlighting the confidence interval on our visualised bootstrap simulation
+  shade_confidence_interval(endpoints = cigenderexperience, colour = "green",fill="lightblue") +
+  
+theme_clean()+
+  labs(x="Experience Gap",
        y="Count",
-       title="Is there a significant difference between men and women's experience?",
-       subtitle="Null hypothesis distribution and p-value") +
-  theme_clean()
+       title="Title 1",
+       subtitle="Bootstrap simulation of gender pay gap",
+       caption="Source: Omega Group plc Salary Data") +NULL
 
-#Get the numerical p value
-experience_null_world %>% get_p_value(obs_stat = init_exp_null, direction = "two_sided")
+gender_experience %>%
+  get_pvalue(obs_stat = gender_dataframe4[2,7]-gender_dataframe4[1,7],direction="both")
 ```
 
-> From the data obtained using t.test(), the plot of the null distribution and the p value (which is less than 0.05), we can reject the null hypothesis. Hence, we can conclude that there is a significant difference between the experience of men and women. This conclusion doesn't endanger the previous one that indicated that salaries of men and women are significantly different. However, from the current analysis, we can say the salaries are not necessarily different due to factors such as gender discrimination, there can be other factors such as experience having an important effect on the salary gap.
+All tests above support the rejection of the null hypothesis - a significant difference between the the experience of men and women can be confirmed. This is not contradictory with our previous results. However, it supports the thesis, that salary differences are not necessarily due to gender discrimination, but factors like experience might also have an impact.
+
+## Relationship Salary - Experience ?
+
+We will now investigate whether there is any significant relationship between experience and salary in order to determine whether there is a clear reason explaining Omega's gender pay gap.
 
 
-## The relationship between salary and experience
+```{r, salary_exp_cor}
+#Calculating correlation
+cor(omega$experience, omega$salary)
+#Correlation is 0.803, strong and positive
+```
 
 ```{r, salary_exp_scatter}
+#Plotting a scatterplot
 
-ggplot(omega,aes(x = experience,
-                 y = salary)) + 
-  geom_smooth() + 
-  theme_clean() + 
-  geom_point() + 
-  labs(title = "Relationship between experience and salary",
-       x="Experience",
-       y="Salary")
+ggplot(omega,aes(x=experience,
+                 y=salary,alpha=0.3))+
+  geom_point(aes(colour = gender),size=3)+
+  geom_smooth(aes(x=experience,y=salary),
+              method=lm,
+              se=FALSE,
+              colour="blue")+
+  scale_y_continuous(labels=scales::dollar_format())+
+  theme_calc() +
+  labs(title = "Strong relationship between experience and salary",
+       x="Experience (years)",
+       y="Salary",
+       caption = "Source: Omega Group plc: Pay Discrimination")
 
 ```
 
 ## Check correlations between the data
 
-We will generate a matrix in order to better visualize relationships between salary, experience and gender before reaching a conclusion.
+Using `GGally:ggpairs()` to efficiently observe relationships between all the variables in our dataset.
+
 ```{r, ggpairs}
 omega %>% 
   select(gender, experience, salary) %>% #order variables they will appear in ggpairs()
-  ggpairs(aes(colour = gender, alpha = 0.3))+
+  ggpairs(aes(colour=gender, alpha = 0.3))+
   theme_bw()
 ```
 
->The scatterplot displaying the relationship between salary and experience shows us that these two variables are positively correlated. Moreover, their relationship resemble a logarithmic function, meaning that the marginal effect of a year of experience is positive but decreases over time.
+> We can infer a strong positive relationship between salary and experience. Moreover, we can see that among the top 10 employees ranked by experience, only 1 is female. Conversely, all 6 employees with 0 years of experience are female. Therefore, we can have reasonable confidence in deducing that Omega's gender pay gap is not necessarily discriminatory, but driven by very pronounced differences in experience which is a strong predictor of salary.
 
->Our previous hypothesis testing and the correlation matrix confirm that males have on average more experience and higher salaries than females at Omega. Moreover,the correlation between salary and experience is positive and significant for both genders (ρ females= 0.812, ρ males= 0.661, ρ both=0.803), validating that the salary gap between the two groups may not come from discrimination but mainly from the difference in experience.
-
->Note that the slight discrepancy in the correlation between salary and experience across genders is caused by the cluster at experience=0 : many females at Omega have no experience and start at different salaries, perhaps because they have different degrees or backgrounds. Since we have no data points for males at experience=0 , it generates a difference between ρ females and  ρ males. It would have been interestin tog analyze further if the same would have happened to males with no experience.

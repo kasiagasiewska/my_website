@@ -89,7 +89,7 @@ disqusShortname = ""
     # Display your showcases here.
     
     [[params.tiles.showcase]]
-      title = "Stock Returns"
+      title = "Finance"
       subtitle = "Exploring risk and return relationship for selected stocks"
       image = "pic01.jpg"
       url = "blogs/project_stocks"
@@ -101,13 +101,13 @@ disqusShortname = ""
      url = "blogs/project_alcohol"
 
     [[params.tiles.showcase]]
-      title = "Trump's Approval Margins"
+      title = "Politics"
       subtitle = "Estimating Net Approval for Donald Trump"
       image = "pic03.jpg"
       url = "blogs/project_trump"
 
     [[params.tiles.showcase]]
-      title = "Climate Change"
+      title = "Climate"
       subtitle = "Analysing temperature anomalies throughout the century"
       image = "pic04.jpg"
       url = "projects/project_climate"

@@ -101,8 +101,8 @@ disqusShortname = ""
     # Display your showcases here.
     
     [[params.tiles.showcase]]
-      title = "Economy"
-      subtitle = "Exploring stock behaviour and GDP trends"
+      title = "Finance"
+      subtitle = "Exploring stock behaviours and yield curves"
       image = "pic01.jpg"
       url = "blogs/project_finance"
 
@@ -126,15 +126,15 @@ disqusShortname = ""
 
     [[params.tiles.showcase]]
       title = "Society"
-      subtitle = "Investigating the relationship between gender, salary and experience"
+      subtitle = "Investigating gender gap and social media usage"
       image = "pic05.jpg"
      url = "blogs/project_gender"
 
-    #[[params.tiles.showcase]]
-      #title = "Economy"
-      #subtitle = "Looking into GDP components in 3 countries"
-      #image = "pic06.jpg"
-      #url = "blogs/project_GDP"
+    [[params.tiles.showcase]]
+      title = "Economy"
+      subtitle = "Looking into GDP trends in 3 countries"
+      image = "pic06.jpg"
+      url = "blogs/project_GDP"
     # You can make more showcases by copy and pasting the code above
 
   [params.blog]

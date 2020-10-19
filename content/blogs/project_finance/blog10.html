@@ -1,0 +1,278 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:42:51-05:00"
+description: Enter to learn more about the relationship between yield curve and recessions!
+draft: false
+image: pic10.jpg
+keywords: ""
+slug: yield
+title: Yield Curve
+---
+
+
+
+<div id="yield-curve-inversion" class="section level1">
+<h1>Yield Curve inversion</h1>
+<p>First, we use the <code>tidyquant</code> package to download monthly rates for different durations.</p>
+<pre class="r"><code># Get a list of FRED codes for US rates and US yield curve; choose monthly frequency
+# to see, eg., the 3-month T-bill https://fred.stlouisfed.org/series/TB3MS
+tickers &lt;- c(&#39;TB3MS&#39;, # 3-month Treasury bill (or T-bill)
+             &#39;TB6MS&#39;, # 6-month
+             &#39;GS1&#39;,   # 1-year
+             &#39;GS2&#39;,   # 2-year, etc....
+             &#39;GS3&#39;,
+             &#39;GS5&#39;,
+             &#39;GS7&#39;,
+             &#39;GS10&#39;,
+             &#39;GS20&#39;,
+             &#39;GS30&#39;)  #.... all the way to the 30-year rate
+
+# Turn  FRED codes to human readable variables
+myvars &lt;- c(&#39;3-Month Treasury Bill&#39;,
+            &#39;6-Month Treasury Bill&#39;,
+            &#39;1-Year Treasury Rate&#39;,
+            &#39;2-Year Treasury Rate&#39;,
+            &#39;3-Year Treasury Rate&#39;,
+            &#39;5-Year Treasury Rate&#39;,
+            &#39;7-Year Treasury Rate&#39;,
+            &#39;10-Year Treasury Rate&#39;,
+            &#39;20-Year Treasury Rate&#39;,
+            &#39;30-Year Treasury Rate&#39;)
+
+maturity &lt;- c(&#39;3m&#39;, &#39;6m&#39;, &#39;1y&#39;, &#39;2y&#39;,&#39;3y&#39;,&#39;5y&#39;,&#39;7y&#39;,&#39;10y&#39;,&#39;20y&#39;,&#39;30y&#39;)
+
+# by default R will sort these maturities alphabetically; but since we want
+# to keep them in that exact order, we recast maturity as a factor 
+# or categorical variable, with the levels defined as we want
+maturity &lt;- factor(maturity, levels = maturity)
+
+# Create a lookup dataset
+mylookup&lt;-data.frame(symbol=tickers,var=myvars, maturity=maturity)
+# Take a look:
+mylookup %&gt;% 
+  knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">symbol</th>
+<th align="left">var</th>
+<th align="left">maturity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">TB3MS</td>
+<td align="left">3-Month Treasury Bill</td>
+<td align="left">3m</td>
+</tr>
+<tr class="even">
+<td align="left">TB6MS</td>
+<td align="left">6-Month Treasury Bill</td>
+<td align="left">6m</td>
+</tr>
+<tr class="odd">
+<td align="left">GS1</td>
+<td align="left">1-Year Treasury Rate</td>
+<td align="left">1y</td>
+</tr>
+<tr class="even">
+<td align="left">GS2</td>
+<td align="left">2-Year Treasury Rate</td>
+<td align="left">2y</td>
+</tr>
+<tr class="odd">
+<td align="left">GS3</td>
+<td align="left">3-Year Treasury Rate</td>
+<td align="left">3y</td>
+</tr>
+<tr class="even">
+<td align="left">GS5</td>
+<td align="left">5-Year Treasury Rate</td>
+<td align="left">5y</td>
+</tr>
+<tr class="odd">
+<td align="left">GS7</td>
+<td align="left">7-Year Treasury Rate</td>
+<td align="left">7y</td>
+</tr>
+<tr class="even">
+<td align="left">GS10</td>
+<td align="left">10-Year Treasury Rate</td>
+<td align="left">10y</td>
+</tr>
+<tr class="odd">
+<td align="left">GS20</td>
+<td align="left">20-Year Treasury Rate</td>
+<td align="left">20y</td>
+</tr>
+<tr class="even">
+<td align="left">GS30</td>
+<td align="left">30-Year Treasury Rate</td>
+<td align="left">30y</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>df &lt;- tickers %&gt;% tidyquant::tq_get(get=&quot;economic.data&quot;, 
+                   from=&quot;1960-01-01&quot;)   # start from January 1960
+
+glimpse(df)</code></pre>
+<pre><code>## Rows: 6,774
+## Columns: 3
+## $ symbol &lt;chr&gt; &quot;TB3MS&quot;, &quot;TB3MS&quot;, &quot;TB3MS&quot;, &quot;TB3MS&quot;, &quot;TB3MS&quot;, &quot;TB3MS&quot;, &quot;TB3MS&quot;,…
+## $ date   &lt;date&gt; 1960-01-01, 1960-02-01, 1960-03-01, 1960-04-01, 1960-05-01, 1…
+## $ price  &lt;dbl&gt; 4.35, 3.96, 3.31, 3.23, 3.29, 2.46, 2.30, 2.30, 2.48, 2.30, 2.…</code></pre>
+<p>Our dataframe <code>df</code> has three columns (variables):</p>
+<ul>
+<li><code>symbol</code>: the FRED database ticker symbol</li>
+<li><code>date</code>: already a date object</li>
+<li><code>price</code>: the actual yield on that date</li>
+</ul>
+<p>The first thing would be to join this dataframe <code>df</code> with the dataframe <code>mylookup</code> so we have a more readable version of maturities, durations, etc.</p>
+<pre class="r"><code>yield_curve &lt;-left_join(df,mylookup,by=&quot;symbol&quot;)
+glimpse(yield_curve)</code></pre>
+<pre><code>## Rows: 6,774
+## Columns: 5
+## $ symbol   &lt;chr&gt; &quot;TB3MS&quot;, &quot;TB3MS&quot;, &quot;TB3MS&quot;, &quot;TB3MS&quot;, &quot;TB3MS&quot;, &quot;TB3MS&quot;, &quot;TB3MS…
+## $ date     &lt;date&gt; 1960-01-01, 1960-02-01, 1960-03-01, 1960-04-01, 1960-05-01,…
+## $ price    &lt;dbl&gt; 4.35, 3.96, 3.31, 3.23, 3.29, 2.46, 2.30, 2.30, 2.48, 2.30, …
+## $ var      &lt;chr&gt; &quot;3-Month Treasury Bill&quot;, &quot;3-Month Treasury Bill&quot;, &quot;3-Month T…
+## $ maturity &lt;fct&gt; 3m, 3m, 3m, 3m, 3m, 3m, 3m, 3m, 3m, 3m, 3m, 3m, 3m, 3m, 3m, …</code></pre>
+<div id="yields-on-us-rates-by-duration-since-1960" class="section level2">
+<h2>Yields on US rates by duration since 1960</h2>
+<p><img src="/Users/kasia/Desktop/LBS/Data Analytics/my_website/images/yield_curve1.png" width="100%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Preparation for proper positioning of durations in the chart
+yield_curve$var &lt;- factor(yield_curve$var, levels = c(&quot;3-Month Treasury Bill&quot;, &quot;6-Month Treasury Bill&quot;, &quot;1-Year Treasury Rate&quot;, &quot;2-Year Treasury Rate&quot;, &quot;3-Year Treasury Rate&quot;, &quot;5-Year Treasury Rate&quot;, &quot;7-Year Treasury Rate&quot;, &quot;10-Year Treasury Rate&quot;, &quot;20-Year Treasury Rate&quot;, &quot;30-Year Treasury Rate&quot;))
+
+#Plotting
+ggplot(data = yield_curve, 
+       aes(x = date, y = price, colour = maturity)) +
+  geom_line(show.legend = FALSE) + 
+#Showing for each duration a single small grapgh
+  facet_wrap(~var, nrow = 5) + 
+  theme_bw() + 
+#Adding labels to the graph
+  labs(title = &quot;Yields on U.S. Treasury rates since 1960&quot;, x = &quot;&quot;, y = &quot;%&quot;, caption = &quot;Source:St. Louis Federal Reserve Economic Database (FRED)&quot;) </code></pre>
+<p><img src="/blogs/project_finance/blog10_files/figure-html/yield_curve_1_replication-1.png" width="1440" style="display: block; margin: auto;" /></p>
+</div>
+<div id="monthly-yields-on-us-rates-by-duration-since-1999-on-a-year-by-year-basis" class="section level2">
+<h2>Monthly yields on US rates by duration since 1999 on a year-by-year basis</h2>
+<p><img src="/Users/kasia/Desktop/LBS/Data Analytics/my_website/images/yield_curve2.png" width="100%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Filter for data since 1999
+yield_curve_two &lt;- yield_curve %&gt;%
+  group_by(year(date)) %&gt;%
+  filter(year(date) &gt;= 1999)
+
+#Plotting
+ggplot(yield_curve_two, 
+       aes(x = maturity, 
+           y = price, 
+           colour = maturity,
+#Showing one line per month for each yearly graph
+           group = date))+ 
+  geom_line(show.legend = FALSE) + 
+#Showing for each year a single graph spread over six rows
+  facet_wrap(~year(date), nrow = 6) + 
+  theme_bw() + 
+#Adding labels to the graph
+  labs(title = &quot;US Yield Curve&quot;, 
+       x = &quot;Maturity&quot;, 
+       y = &quot;Yield(%)&quot;, 
+       caption = &quot;Source:St. Louis Federal Reserve Economic Database (FRED)&quot;) </code></pre>
+<p><img src="/blogs/project_finance/blog10_files/figure-html/yield_curve_2_replication-1.png" width="1440" style="display: block; margin: auto;" /></p>
+</div>
+<div id="month-and-10-year-yields-since-1999" class="section level2">
+<h2>3-month and 10-year yields since 1999</h2>
+<p><img src="/Users/kasia/Desktop/LBS/Data Analytics/my_website/images/yield_curve3.png" width="100%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Filter for 3-month and 10-year US Treasury yields
+yield_curve_legend &lt;- yield_curve_two %&gt;%
+  filter(maturity == c(&quot;3m&quot;, &quot;10y&quot;))
+
+#yield_curve_legend
+
+#Plotting
+ggplot(yield_curve_legend, 
+       aes(x = date, 
+           y = price, 
+           colour = var))+ 
+  geom_line() +
+#Definition of grids and background
+  theme(panel.grid.major = element_line(colour = &quot;#f0f0f0&quot;),
+        panel.background = element_rect(colour = &quot;black&quot;, size=0.5, fill = NA),
+#Definition of legend features
+        legend.key = element_rect(colour = &quot;transparent&quot;, fill = &quot;transparent&quot;),
+        legend.position = &quot;right&quot;,
+        legend.title = element_blank()) + 
+#Adding labels to the graph
+  labs(title = &quot;Yields on 3-month and 10-year Treasury rates since 1999&quot;, 
+       x = &quot;&quot;, 
+       y = &quot;%&quot;, 
+       caption = &quot;Source:St. Louis Federal Reserve Economic Database (FRED)&quot;) </code></pre>
+<p><img src="/blogs/project_finance/blog10_files/figure-html/yield_curve_3_replication-1.png" width="1440" style="display: block; margin: auto;" /></p>
+</div>
+<div id="forecasting-recessions-in-the-us-with-a-yield-curve" class="section level2">
+<h2>Forecasting recessions in the US with a yield curve</h2>
+<p>Besides calculating the spread (10year - 3months), there are a few things we need to do to produce our final plot</p>
+<ol style="list-style-type: decimal">
+<li>Setup data for US recessions</li>
+<li>Superimpose recessions as the grey areas in our plot</li>
+<li>Plot the spread between 30 years and 3 months as a blue/red ribbon, based on whether the spread is positive (blue) or negative(red)</li>
+</ol>
+<pre class="r"><code># get US recession dates after 1946 from Wikipedia 
+# https://en.wikipedia.org/wiki/List_of_recessions_in_the_United_States
+
+recessions &lt;- tibble(
+  from = c(&quot;1948-11-01&quot;, &quot;1953-07-01&quot;, &quot;1957-08-01&quot;, &quot;1960-04-01&quot;, &quot;1969-12-01&quot;, &quot;1973-11-01&quot;, &quot;1980-01-01&quot;,&quot;1981-07-01&quot;, &quot;1990-07-01&quot;, &quot;2001-03-01&quot;, &quot;2007-12-01&quot;),  
+  to = c(&quot;1949-10-01&quot;, &quot;1954-05-01&quot;, &quot;1958-04-01&quot;, &quot;1961-02-01&quot;, &quot;1970-11-01&quot;, &quot;1975-03-01&quot;, &quot;1980-07-01&quot;, &quot;1982-11-01&quot;, &quot;1991-03-01&quot;, &quot;2001-11-01&quot;, &quot;2009-06-01&quot;) 
+  )  %&gt;% 
+  mutate(From = ymd(from), 
+         To=ymd(to),
+         duration_days = To-From)</code></pre>
+<pre class="r"><code>#Selecting appropriate variables and calculating difference between yields
+yield_curve_wide &lt;- yield_curve %&gt;% 
+select(date, symbol, price) %&gt;% 
+pivot_wider(names_from = symbol, values_from = price) %&gt;%
+  mutate(difference=`GS10`-`TB3MS`)
+
+#Filter for recession since 1960
+recessions_filter &lt;- recessions %&gt;%
+  filter(From != c(&quot;1948-11-01&quot;, &quot;1953-07-01&quot;, &quot;1957-08-01&quot;))
+
+#Plotting
+ggplot(yield_curve_wide, 
+       aes(x = date, y = difference)) +
+  geom_line() +
+#Adding color between difference line and y=0 depending on the current state
+  geom_ribbon(aes(ymin = 0, ymax = pmax(0, difference),
+                  alpha = 0.5),
+              show.legend = FALSE,
+              fill = &#39;#c6dbef&#39;, color = &quot;black&quot;, size=0.15) +
+  geom_ribbon(aes(ymin = pmin(0, difference), ymax = 0,
+                  alpha = 0.5),
+              show.legend = FALSE,
+              fill = &#39;#CD8383&#39;, color = &quot;black&quot;, size=0.15) +
+#Adding color to the bottom of the graph depending on current state
+  geom_rug(aes(colour=ifelse(difference&gt;=0,&quot;&gt;=0&quot;,&quot;&lt;0&quot;)),sides=&quot;b&quot;,alpha=0.5) + 
+#Adding recession periods to the graph 
+   geom_rect(data=recessions_filter, inherit.aes=F, aes(xmin=From, xmax=To, ymin=-Inf, ymax=+Inf), fill=&#39;grey&#39;, alpha=0.5) +
+#Definition of grids and background
+  scale_colour_manual(values=c(&quot;#CD8383&quot;,&quot;#08519c&quot;), guide=FALSE) +
+  theme(panel.grid.major = element_line(colour = &quot;#f0f0f0&quot;),
+        panel.background = element_rect(colour = &quot;black&quot;, size=0.5, fill = NA),
+#Definition of legend features    
+        legend.key = element_rect(colour = &quot;transparent&quot;, fill = &quot;transparent&quot;)) + 
+  geom_hline(yintercept=0,color=&quot;black&quot;) +
+#Adding labels to the graph
+    labs(title = &quot;Yield Curve Inversion: 10-year minus 3-month U.S. Treasury rates&quot;, subtitle=&quot;Difference in % points, monthly averages. \nShaded areas correspond to recessions&quot;,
+       y = &quot;Difference (10year-3month) yield in %&quot;, 
+       x = &quot;&quot;, 
+       caption = &quot;Source:St. Louis Federal Reserve Economic Database (FRED)&quot;) +
+#Adapting scale
+  scale_x_date(date_breaks=&quot;2 years&quot;,date_labels=&quot;%Y&quot;)</code></pre>
+<p><img src="/blogs/project_finance/blog10_files/figure-html/yield_curve_4-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<blockquote>
+<p>Looking at our graph, we can clearly detect a correlation between yield difference curve movement and recessions. Several times directly before a recession the short term yield exceeds the long term yield and thus a negative yield difference exists. This pattern also applies to the two recessions in the US since 1999 according to Wikipedia. Alltogether, since 1999, a negative yield difference has been recorded three times - the above mentioned recessions and once more in 2020. The 2020 negative yield difference is directly before the covid-19 recession, however, the recession data frame does not yet include this recession. So overall, a negative difference seems to be a rather reliable predictor, although not always accurate according to the graph.</p>
+</blockquote>
+</div>
+</div>

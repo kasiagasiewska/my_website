@@ -114,9 +114,9 @@ disqusShortname = ""
 
     [[params.tiles.showcase]]
       title = "Consequa"
-      subtitle = "Ipsum Dolor Sit Amet"
+      subtitle = "Investigating the relationship between gender, salary and experience"
       image = "pic05.jpg"
-      url = "blogs/project"
+      url = "blogs/project_gender"
 
     [[params.tiles.showcase]]
       title = "Etiam"

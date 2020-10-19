@@ -136,7 +136,7 @@ disqusShortname = ""
   [params.two]
     enable = true
     title = "A little bit about me"
-    subtitle = """My nam is Kasia and I come from Poland! I came to the UK 5 years ago to study Philosophy, Politics and Economics"""
+    subtitle = """My nam is Kasia and I come from Poland! n\ I came to the UK 5 years ago to study Philosophy, Politics and Economics"""
     buttonText = "Get Started"
     url = "blogs"
 

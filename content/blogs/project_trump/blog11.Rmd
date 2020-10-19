@@ -1,0 +1,115 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:42:51-05:00"
+description: Enter to see where did the 2016 US presidential candidates raise the most money!
+draft: false
+image: pic11.jpg
+keywords: ""
+slug: elections
+title: US Elections 2016
+---
+
+
+```{r, setup}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+
+```{r load-libraries, warning=FALSE, message=FALSE, echo=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(lubridate)
+library(fivethirtyeight)
+library(here)
+library(skimr)
+library(janitor)
+library(vroom)
+library(tidyquant)
+```
+
+
+# 2016 California Contributors plots
+
+## Plotting total donations by Californian cities for 2016 presidential candidates
+
+```{r, load_CA_data, warnings= FALSE, message=FALSE}
+# Make sure you use vroom() as it is significantly faster than read.csv()
+CA_contributors_2016 <- vroom::vroom(here::here("data","CA_contributors_2016.csv"))
+zip_codes <- vroom::vroom(here::here("data","zip_code_database.csv"))
+
+CA_contributors_2016 %>%
+  glimpse %>%
+  skim
+
+zip_codes %>%
+  glimpse %>%
+  skim
+
+library(patchwork)
+library(tidytext)
+
+#Get total donations per zip code per candidate
+donations_by_zip <- CA_contributors_2016 %>%
+  group_by(cand_nm, zip) %>%
+  summarize(total_by_zip = sum(contb_receipt_amt))
+
+#Filter out the unnecessary information in the zip_codes data
+cali_cities <- zip_codes %>%
+  filter(state == "CA") %>%
+  transform(zip = as.double(zip)) %>%
+  select(zip, primary_city)
+
+#Find the donations per city for all candidates
+donations_by_city <- donations_by_zip %>%
+  inner_join(cali_cities, by = "zip") %>%
+  group_by(cand_nm, primary_city) %>%
+  summarize(total_by_city = sum(total_by_zip))
+
+#Narrow it down to just the two presidential nominees and their top 10 cities
+presidentials <- donations_by_city %>%
+  filter(cand_nm == "Trump, Donald J." | cand_nm == "Clinton, Hillary Rodham") %>%
+  group_by(cand_nm) %>%
+  slice_max(n=10, order_by = total_by_city) %>%
+  ungroup()  # mutate(cand_nm = as.factor(cand_nm), reorder_within(primary_city, total_by_city, cand_nm))
+
+# presidentials
+presidentials
+
+pres_plot <- ggplot(presidentials, aes(x=reorder_within(primary_city, total_by_city, cand_nm), total_by_city, y = total_by_city)) +
+  geom_bar(stat='identity', aes(color = as.factor(cand_nm), fill = as.factor(cand_nm)), show.legend = FALSE) +
+  coord_flip() +
+  labs(title = "Where did candidates raise the most money?", y = "Amount raised") +
+  scale_y_continuous(labels = scales::dollar) +
+  scale_x_reordered() +
+  scale_fill_manual(values = c("#2e74c0", "#cb454a")) +
+  scale_color_manual(values = c("#bcd3eb", "#eab2b4")) +
+  ggtitle("Where did candidates raise the most money?") +
+  theme(plot.title = element_text(size = 30, face = "bold")) +
+  facet_wrap(~cand_nm, scales = "free") +
+  theme(strip.background = element_rect(fill="lightGrey", color = "black", size = 0.5),
+              strip.text = element_text(size=8),
+              panel.border = element_rect(colour = "black", size=0.5, fill = NA, linetype = "solid"),
+        panel.background = element_rect(fill = "white"),
+        panel.grid.major = element_line(colour = "#f0f0f0"),
+              plot.title = element_text(size = 8),
+              axis.title.y = element_blank()) + theme(plot.title = element_text(size = 14))
+
+pres_plot
+
+
+```

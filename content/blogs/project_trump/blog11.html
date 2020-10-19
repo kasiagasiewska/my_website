@@ -1,0 +1,537 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:42:51-05:00"
+description: Enter to see where did the 2016 US presidential candidates raise the most money!
+draft: false
+image: pic11.jpg
+keywords: ""
+slug: elections
+title: US Elections 2016
+---
+
+
+
+<pre class="r"><code>knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size=&quot;small&quot;)   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = &quot;center&quot;
+)</code></pre>
+<div id="california-contributors-plots" class="section level1">
+<h1>2016 California Contributors plots</h1>
+<div id="plotting-total-donations-by-californian-cities-for-2016-presidential-candidates" class="section level2">
+<h2>Plotting total donations by Californian cities for 2016 presidential candidates</h2>
+<pre class="r"><code># Make sure you use vroom() as it is significantly faster than read.csv()
+CA_contributors_2016 &lt;- vroom::vroom(here::here(&quot;data&quot;,&quot;CA_contributors_2016.csv&quot;))
+zip_codes &lt;- vroom::vroom(here::here(&quot;data&quot;,&quot;zip_code_database.csv&quot;))
+
+CA_contributors_2016 %&gt;%
+  glimpse %&gt;%
+  skim</code></pre>
+<pre><code>## Rows: 1,292,843
+## Columns: 4
+## $ cand_nm           &lt;chr&gt; &quot;Clinton, Hillary Rodham&quot;, &quot;Clinton, Hillary Rodham…
+## $ contb_receipt_amt &lt;dbl&gt; 50.0, 200.0, 5.0, 48.3, 40.0, 244.3, 35.0, 100.0, 2…
+## $ zip               &lt;dbl&gt; 94939, 93428, 92337, 95334, 93011, 95826, 90278, 90…
+## $ contb_date        &lt;date&gt; 2016-04-26, 2016-04-20, 2016-04-02, 2016-11-21, 20…</code></pre>
+<table>
+<caption>(#tab:load_CA_data)Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">Piped data</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">1292843</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">4</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Date</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="left">numeric</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
+<th align="right">n_unique</th>
+<th align="right">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">cand_nm</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">9</td>
+<td align="right">25</td>
+<td align="right">0</td>
+<td align="right">25</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: Date</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="left">min</th>
+<th align="left">max</th>
+<th align="left">median</th>
+<th align="right">n_unique</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">contb_date</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">2013-11-05</td>
+<td align="left">2016-12-31</td>
+<td align="left">2016-05-31</td>
+<td align="right">732</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">contb_receipt_amt</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">120</td>
+<td align="right">389</td>
+<td align="right">-8300</td>
+<td align="right">15</td>
+<td align="right">27</td>
+<td align="right">94</td>
+<td align="right">10800</td>
+<td align="left">▁▁▇▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">zip</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">93127</td>
+<td align="right">1839</td>
+<td align="right">90001</td>
+<td align="right">91604</td>
+<td align="right">93422</td>
+<td align="right">94611</td>
+<td align="right">96162</td>
+<td align="left">▆▅▅▇▆</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>zip_codes %&gt;%
+  glimpse %&gt;%
+  skim</code></pre>
+<pre><code>## Rows: 42,522
+## Columns: 16
+## $ zip                  &lt;chr&gt; &quot;00501&quot;, &quot;00544&quot;, &quot;00601&quot;, &quot;00602&quot;, &quot;00603&quot;, &quot;00…
+## $ type                 &lt;chr&gt; &quot;UNIQUE&quot;, &quot;UNIQUE&quot;, &quot;STANDARD&quot;, &quot;STANDARD&quot;, &quot;STA…
+## $ primary_city         &lt;chr&gt; &quot;Holtsville&quot;, &quot;Holtsville&quot;, &quot;Adjuntas&quot;, &quot;Aguada&quot;…
+## $ acceptable_cities    &lt;chr&gt; NA, NA, NA, NA, &quot;Ramey&quot;, &quot;Ramey&quot;, NA, NA, NA, NA…
+## $ unacceptable_cities  &lt;chr&gt; &quot;I R S Service Center&quot;, &quot;Irs Service Center&quot;, &quot;C…
+## $ state                &lt;chr&gt; &quot;NY&quot;, &quot;NY&quot;, &quot;PR&quot;, &quot;PR&quot;, &quot;PR&quot;, &quot;PR&quot;, &quot;PR&quot;, &quot;PR&quot;, …
+## $ county               &lt;chr&gt; &quot;Suffolk County&quot;, &quot;Suffolk County&quot;, &quot;Adjuntas&quot;, …
+## $ timezone             &lt;chr&gt; &quot;America/New_York&quot;, &quot;America/New_York&quot;, &quot;America…
+## $ area_codes           &lt;dbl&gt; 631, 631, 787939, 787, 787, NA, NA, 787939, 787,…
+## $ latitude             &lt;dbl&gt; 40.8, 40.8, 18.2, 18.4, 18.4, 18.4, 18.4, 18.2, …
+## $ longitude            &lt;dbl&gt; -73.0, -73.0, -66.7, -67.2, -67.2, -67.2, -67.2,…
+## $ world_region         &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
+## $ country              &lt;chr&gt; &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, &quot;US&quot;, …
+## $ decommissioned       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ estimated_population &lt;dbl&gt; 384, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+## $ notes                &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;no NWS data…</code></pre>
+<table>
+<caption>(#tab:load_CA_data)Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">Piped data</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">42522</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">16</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">11</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">5</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
+<th align="right">n_unique</th>
+<th align="right">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">zip</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">5</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">42522</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">type</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">6</td>
+<td align="right">8</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">primary_city</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">3</td>
+<td align="right">27</td>
+<td align="right">0</td>
+<td align="right">18758</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">acceptable_cities</td>
+<td align="right">33512</td>
+<td align="right">0.21</td>
+<td align="right">3</td>
+<td align="right">282</td>
+<td align="right">0</td>
+<td align="right">7162</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">unacceptable_cities</td>
+<td align="right">30236</td>
+<td align="right">0.29</td>
+<td align="right">2</td>
+<td align="right">2208</td>
+<td align="right">0</td>
+<td align="right">10468</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">state</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">62</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">county</td>
+<td align="right">850</td>
+<td align="right">0.98</td>
+<td align="right">7</td>
+<td align="right">39</td>
+<td align="right">0</td>
+<td align="right">1923</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">timezone</td>
+<td align="right">1917</td>
+<td align="right">0.95</td>
+<td align="right">12</td>
+<td align="right">28</td>
+<td align="right">0</td>
+<td align="right">26</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">world_region</td>
+<td align="right">42189</td>
+<td align="right">0.01</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">8</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">country</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">61</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">notes</td>
+<td align="right">41191</td>
+<td align="right">0.03</td>
+<td align="right">13</td>
+<td align="right">124</td>
+<td align="right">0</td>
+<td align="right">10</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">area_codes</td>
+<td align="right">1240</td>
+<td align="right">0.97</td>
+<td align="right">5.19e+24</td>
+<td align="right">1.05e+27</td>
+<td align="right">201.0</td>
+<td align="right">406.0</td>
+<td align="right">620.0</td>
+<td align="right">870.0</td>
+<td align="right">2.14e+29</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">latitude</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">3.79e+01</td>
+<td align="right">7.18e+00</td>
+<td align="right">-44.2</td>
+<td align="right">34.7</td>
+<td align="right">39.0</td>
+<td align="right">41.8</td>
+<td align="right">7.13e+01</td>
+<td align="left">▁▁▁▇▁</td>
+</tr>
+<tr class="odd">
+<td align="left">longitude</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">-8.95e+01</td>
+<td align="right">1.97e+01</td>
+<td align="right">-176.7</td>
+<td align="right">-97.1</td>
+<td align="right">-87.7</td>
+<td align="right">-79.8</td>
+<td align="right">1.71e+02</td>
+<td align="left">▂▇▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">decommissioned</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">2.00e-02</td>
+<td align="right">1.20e-01</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td align="right">1.00e+00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">estimated_population</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">5.65e+03</td>
+<td align="right">9.72e+03</td>
+<td align="right">0.0</td>
+<td align="right">0.0</td>
+<td align="right">1168.0</td>
+<td align="right">6207.2</td>
+<td align="right">8.85e+04</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>library(patchwork)
+library(tidytext)
+
+#Get total donations per zip code per candidate
+donations_by_zip &lt;- CA_contributors_2016 %&gt;%
+  group_by(cand_nm, zip) %&gt;%
+  summarize(total_by_zip = sum(contb_receipt_amt))
+
+#Filter out the unnecessary information in the zip_codes data
+cali_cities &lt;- zip_codes %&gt;%
+  filter(state == &quot;CA&quot;) %&gt;%
+  transform(zip = as.double(zip)) %&gt;%
+  select(zip, primary_city)
+
+#Find the donations per city for all candidates
+donations_by_city &lt;- donations_by_zip %&gt;%
+  inner_join(cali_cities, by = &quot;zip&quot;) %&gt;%
+  group_by(cand_nm, primary_city) %&gt;%
+  summarize(total_by_city = sum(total_by_zip))
+
+#Narrow it down to just the two presidential nominees and their top 10 cities
+presidentials &lt;- donations_by_city %&gt;%
+  filter(cand_nm == &quot;Trump, Donald J.&quot; | cand_nm == &quot;Clinton, Hillary Rodham&quot;) %&gt;%
+  group_by(cand_nm) %&gt;%
+  slice_max(n=10, order_by = total_by_city) %&gt;%
+  ungroup()  # mutate(cand_nm = as.factor(cand_nm), reorder_within(primary_city, total_by_city, cand_nm))
+
+# presidentials
+presidentials</code></pre>
+<pre><code>## # A tibble: 20 x 3
+##    cand_nm                 primary_city    total_by_city
+##    &lt;chr&gt;                   &lt;chr&gt;                   &lt;dbl&gt;
+##  1 Clinton, Hillary Rodham San Francisco       12345963.
+##  2 Clinton, Hillary Rodham Los Angeles         12022399.
+##  3 Clinton, Hillary Rodham Oakland              2955387.
+##  4 Clinton, Hillary Rodham Palo Alto            2664346.
+##  5 Clinton, Hillary Rodham Berkeley             2300980.
+##  6 Clinton, Hillary Rodham Beverly Hills        2226442.
+##  7 Clinton, Hillary Rodham Santa Monica         2134503.
+##  8 Clinton, Hillary Rodham San Diego            2094960.
+##  9 Clinton, Hillary Rodham Sacramento           1623772.
+## 10 Clinton, Hillary Rodham Los Altos            1500963.
+## 11 Trump, Donald J.        Los Angeles           544464.
+## 12 Trump, Donald J.        San Diego             482885.
+## 13 Trump, Donald J.        Newport Beach         347206.
+## 14 Trump, Donald J.        Bakersfield           244419.
+## 15 Trump, Donald J.        San Francisco         230712.
+## 16 Trump, Donald J.        San Jose              190652.
+## 17 Trump, Donald J.        Fresno                182674.
+## 18 Trump, Donald J.        Rancho Santa Fe       178233.
+## 19 Trump, Donald J.        Sacramento            171656.
+## 20 Trump, Donald J.        Irvine                157518.</code></pre>
+<pre class="r"><code>pres_plot &lt;- ggplot(presidentials, aes(x=reorder_within(primary_city, total_by_city, cand_nm), total_by_city, y = total_by_city)) +
+  geom_bar(stat=&#39;identity&#39;, aes(color = as.factor(cand_nm), fill = as.factor(cand_nm)), show.legend = FALSE) +
+  coord_flip() +
+  labs(title = &quot;Where did candidates raise the most money?&quot;, y = &quot;Amount raised&quot;) +
+  scale_y_continuous(labels = scales::dollar) +
+  scale_x_reordered() +
+  scale_fill_manual(values = c(&quot;#2e74c0&quot;, &quot;#cb454a&quot;)) +
+  scale_color_manual(values = c(&quot;#bcd3eb&quot;, &quot;#eab2b4&quot;)) +
+  ggtitle(&quot;Where did candidates raise the most money?&quot;) +
+  theme(plot.title = element_text(size = 30, face = &quot;bold&quot;)) +
+  facet_wrap(~cand_nm, scales = &quot;free&quot;) +
+  theme(strip.background = element_rect(fill=&quot;lightGrey&quot;, color = &quot;black&quot;, size = 0.5),
+              strip.text = element_text(size=8),
+              panel.border = element_rect(colour = &quot;black&quot;, size=0.5, fill = NA, linetype = &quot;solid&quot;),
+        panel.background = element_rect(fill = &quot;white&quot;),
+        panel.grid.major = element_line(colour = &quot;#f0f0f0&quot;),
+              plot.title = element_text(size = 8),
+              axis.title.y = element_blank()) + theme(plot.title = element_text(size = 14))
+
+pres_plot</code></pre>
+<p><img src="/blogs/project_trump/blog11_files/figure-html/load_CA_data-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+</div>

@@ -124,10 +124,6 @@ ggplot(net_approval_weekly,
 
 ```
 
-```{r trump_margins, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "trump_approval_margin.png"), error = FALSE)
-```
-
 ## Compare Confidence Intervals
 
 ```{r, cache=TRUE}

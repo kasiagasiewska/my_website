@@ -101,10 +101,10 @@ disqusShortname = ""
     # Display your showcases here.
     
     [[params.tiles.showcase]]
-      title = "Finance"
-      subtitle = "Exploring risk and return relationship for selected stocks"
+      title = "Economy"
+      subtitle = "Exploring stock behaviour and GDP trends"
       image = "pic01.jpg"
-      url = "blogs/project_stocks"
+      url = "blogs/project_stocks_GDP"
 
     [[params.tiles.showcase]]
       title = "Entertainment"

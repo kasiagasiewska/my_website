@@ -93,7 +93,7 @@ disqusShortname = ""
   [params.banner]
     # To change the background image on the homepage banner, replace 'banner.jpg' in
     # the 'static/img' folder.
-    title = "Hi, my name is Kasia"
+    title = "Hi, my name is Kasia!"
     subtitle = "WELCOME TO MY BEAUTFUL PAGE WHERE YOU CAN SEE ALL THE INTERESTING ANALYSIS I DID! I HOPE YOU LIKE IT!"
   # Tiles Section
   [params.tiles]

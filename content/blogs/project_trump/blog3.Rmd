@@ -1,0 +1,149 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:26:13-05:00"
+description: "Enter to see how many people root for Trump!"
+draft: false
+image: pic03.jpg
+keywords: ""
+slug: trump
+title: Trump Approval Rate
+---
+
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+
+```{r load-libraries, include=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(lubridate)
+library(here)
+library(skimr)
+library(janitor)
+library(httr)
+library(readxl)
+library(vroom)
+```
+
+
+# Trump's Approval Margins
+
+```{r, cache=TRUE}
+# Import approval polls data
+approval_polllist <- read_csv(here::here('data', 'approval_polllist.csv'))
+
+glimpse(approval_polllist)
+
+# Use `lubridate` to fix dates, as they are given as characters.
+
+library(lubridate)
+
+approval_polllist$modeldate <- mdy(approval_polllist$modeldate)
+approval_polllist$startdate <- mdy(approval_polllist$startdate)
+approval_polllist$enddate <- mdy(approval_polllist$enddate)
+approval_polllist$createddate <- mdy(approval_polllist$createddate)
+
+```
+
+## Create a plot
+
+```{r, cache=TRUE}
+#Adding net approval
+president_approval <- approval_polllist %>%
+  mutate(net_approval = adjusted_approve - adjusted_disapprove)
+
+#Calculating statistics
+net_approval_weekly <- president_approval %>%
+  filter (subgroup == "Voters") %>%
+  group_by (week_number = isoweek(enddate),
+            year=year(enddate)) %>% 
+  summarise(mean_app = mean(net_approval,
+                            na.rm = TRUE),
+            sd_app = sd(net_approval,
+                        na.rm = TRUE),
+            count_app = n(),
+            se_app = sd_app / sqrt(count_app),
+            t_critical = qt(0.975, count_app-1) ,
+            margin_of_error = t_critical * se_app,
+            app_low = mean_app - margin_of_error,
+            app_high = mean_app + margin_of_error) %>%
+  filter(count_app>1)
+
+#Plotting
+ggplot(net_approval_weekly,
+       aes(x = week_number,
+           fill=as.factor(year))) + 
+  scale_fill_manual(values = c("red","#a1d99b","#66FFFF","#d4b9da")) + 
+  geom_line(aes(y=app_low)) + 
+  geom_line(aes(y=mean_app)) + 
+  geom_line(aes(y=app_high)) + 
+  geom_point(aes(y=mean_app)) + 
+  facet_wrap(~year) + 
+  geom_ribbon (aes(ymin = app_low,
+                   ymax = app_high),
+                    alpha=0.3)  + 
+  geom_hline(yintercept=0, 
+  size=1.0, color="orange") +
+  scale_y_continuous(breaks = c(-20,-17.5,-15,-12.5,-10,-7.5,-5,-2.5,0,2.5,5.0,7.5)) +
+  scale_x_continuous(breaks = c(0, 13,26,39,52)) + 
+  labs(title = "Estimating Net Approval (approve-disapprove) for Donald Trump",
+       subtitle = "Weekly average of all polls",
+       x="Week of the year",
+       y="Average net approval (%)") + 
+  theme(text = element_text(size = 11),
+        legend.position = "none", 
+        panel.background = element_rect(fill = "white", 
+                                        colour = "white", 
+                                        size = 0.5, 
+                                        linetype = "solid"), 
+        panel.grid.major = element_line(size = 0.5, 
+                                        linetype = 'solid', 
+                                        colour = "light grey"), 
+        panel.grid.minor = element_line(size = 0.5, 
+                                        linetype = 'solid', 
+                                        colour = " light grey")) +
+  NULL
+    
+
+```
+
+```{r trump_margins, echo=FALSE, out.width="100%"}
+knitr::include_graphics(here::here("images", "trump_approval_margin.png"), error = FALSE)
+```
+
+## Compare Confidence Intervals
+
+```{r, cache=TRUE}
+
+#Filtering for week 15 year 2020 in the table
+net_approval_week15 <- net_approval_weekly %>%
+  filter(week_number == 15, year == 2020)
+
+net_approval_week15
+
+#Filtering for week 34 year 2020 in the table
+net_approval_week34 <- net_approval_weekly %>%
+  filter(week_number == 34, year == 2020)
+
+net_approval_week34
+
+```
+
+> Looking at the graph, the confidence interval of the later week (week 34) is larger. There might be two reasons for this development, standard deviation and sample size. Variability might be increased and/ or the sample size might be reduced. Checking the table, we are able to identify that standard deviation indeed increased and sample size indeed decreased. 

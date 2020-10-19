@@ -1,0 +1,229 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:42:51-05:00"
+description: Enter to see the demographics of social media users!
+draft: false
+image: pic09.jpg
+keywords: ""
+slug: media
+title: Social Media
+---
+
+
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+
+```{r load-libraries, include=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(lubridate)
+library(here)
+library(skimr)
+library(janitor)
+library(httr)
+library(readxl)
+library(vroom)
+```
+
+
+# General Social Survey (GSS)
+
+The [General Social Survey (GSS)](http://www.gss.norc.org/) gathers data on American society in order to monitor and explain trends in attitudes, behaviours, and attributes. Many trends have been tracked for decades, so one can see the evolution of attitudes, etc in American Society.
+
+In this assignment we analyse data from the **2016 GSS sample data**, using it to estimate values of *population parameters* of interest about US adults. 
+
+Please find below variables we will be testing
+* hours and minutes spent on email weekly. The responses to these questions are recorded in the `emailhr` and `emailmin` variables. 
+* `snapchat`, `instagrm`, `twitter`: whether respondents used these social media in 2016
+* `sex`: Female - Male
+* `degree`: highest education level attained
+
+```{r, read_gss_data, cache=TRUE}
+gss <- read_csv(here::here("data", "smallgss2016.csv"), 
+                na = c("", "Don't know",
+                       "No answer", "Not applicable"))
+
+glimpse(gss)
+skim(gss)
+```
+
+## Instagram and Snapchat, by sex
+
+```{r, insta snapchat, cache=TRUE}
+
+#Creating new variables
+social_usage <- gss %>%
+  mutate(snap_insta = case_when(snapchat == "Yes" & instagrm == "Yes" ~ "Yes", snapchat == "Yes" | instagrm == "Yes" ~ "Yes", snapchat == "No" & instagrm == "No" ~ "No", snapchat == "NA" & instagrm == "NA" ~ "NA" ))
+
+#Calculating the proportions of Yes's and those who answered
+share_yes <- social_usage %>% 
+  count(snap_insta == "Yes") %>% 
+  mutate(n/sum(n)*100)
+
+share_yes_no <- social_usage %>%
+  filter(snap_insta != "NA")
+
+share_yes_no %>% 
+  count(snap_insta == "Yes") %>% 
+  mutate(n/sum(n)*100)
+
+#Social media usage
+social_stats <- social_usage %>%
+  group_by(snap_insta) %>%
+  count(snap_insta) %>%
+  pivot_wider(names_from = snap_insta, values_from = n) %>%
+  mutate(proporation_yes = Yes/(Yes+No))
+
+social_stats
+
+#95% confidence interval
+ci_share <- social_usage %>%
+  group_by(sex, snap_insta) %>%
+  count(snap_insta) %>%
+  pivot_wider(names_from = snap_insta, values_from = n) %>%
+  mutate(mean = Yes/(Yes+No), se = sqrt(mean*(1-mean)/(Yes+No)), t_critical = qt(0.975, (Yes+No)-1), lower = mean - t_critical*se, upper = mean + t_critical*se)
+
+ci_share
+
+#Absolute number of men and women using social media
+ci_gender <- social_usage %>%
+  group_by(sex, snap_insta) %>%
+  count(snap_insta)
+
+ci_gender1 <- social_usage %>%
+  group_by(sex, snap_insta) %>%
+  count(snap_insta) %>%
+  pivot_wider(names_from = snap_insta, values_from = n)
+
+ci_gender1
+
+```
+
+## Twitter, by education level
+
+```{r, twitter, cache=TRUE}
+
+#Turning to Factor variable and non alphabetical
+twitter_users <- gss %>%
+  group_by(degree) %>%
+  count(twitter)
+
+level_order <- c("Lt high school", "High school", "Junior college", "Bachelor", "Graduate")
+
+twitter_count <- gss %>% 
+  group_by(degree) %>%
+  mutate(degree = factor(degree, levels = level_order))
+
+#Creating new variable bachelor_graduate
+twitter_edu <- twitter_count %>%
+  mutate(bachelor_graduate = case_when(degree == "Bachelor" | degree == "Graduate" ~ "Yes", degree == "High school" | degree == "Junior college" | degree == "Lt high school" ~ "No", degree == "NA" ~ "NA" ))
+
+#Proportion of bachelor_graduate
+twitter_data <- twitter_edu %>%
+  group_by(bachelor_graduate, twitter) %>%
+  count(bachelor_graduate, twitter) %>%
+  filter(bachelor_graduate == "Yes") %>%
+  pivot_wider(names_from = twitter, values_from = n) %>%
+  mutate(twitter_yes = Yes/(Yes+No))
+
+twitter_data_set <- twitter_edu %>%
+  group_by(bachelor_graduate, twitter) %>%
+  filter(bachelor_graduate == "Yes", twitter != "NA") %>%
+  summarise(count = n()) %>% 
+  mutate(per_tw = count/sum(count))
+
+twitter_data_set
+
+#Confidence intervals with 95% of Yes and No, and summary
+twitter_CI_yes <- twitter_edu %>%
+  group_by(bachelor_graduate, twitter) %>%
+  count(bachelor_graduate, twitter) %>%
+  pivot_wider(names_from = twitter, values_from = n) %>%
+  mutate(mean = Yes/(Yes+No), se = sqrt(mean*(1-mean)/(Yes+No)), t_critical = qt(0.975, (Yes+No)-1), lower = mean - t_critical*se, upper = mean + t_critical*se)
+
+twitter_CI_no <- twitter_edu %>%
+  group_by(bachelor_graduate, twitter) %>%
+  count(bachelor_graduate, twitter) %>%
+  pivot_wider(names_from = twitter, values_from = n) %>%
+  mutate(mean = No/(Yes+No), se = sqrt(mean*(1-mean)/(Yes+No)), t_critical = qt(0.975, (Yes+No)-1), lower = mean - t_critical*se, upper = mean + t_critical*se)
+
+twitter_CI_yes
+
+twitter_CI_no
+
+twitter_CI_summary <- twitter_data_set %>%
+  summarise(count, per_tw, se = sqrt((per_tw*(1-per_tw)/sum(count))), t_critical = qt(0.975, count-1), margin_of_error = t_critical * se, lower = per_tw - margin_of_error, higher = per_tw + margin_of_error) 
+
+twitter_CI_summary
+
+```
+
+> The confidence intervals do not overlap as the lower bound of "No" is higher than the upper bound of "Yes".
+
+
+## Email usage
+
+```{r, email, cache=TRUE}
+
+#Creating new variable
+email_usage <- gss
+
+email_usage[email_usage == "NA"] <- NA
+
+email_visualize <- email_usage %>% 
+  na.omit() %>% 
+  mutate(emailmin = as.integer(emailmin),
+         emailhr = as.integer(emailhr),
+         email = emailmin + emailhr*60)
+
+#Visualizing the distribution of new variable
+ggplot(data = email_visualize, aes(x = email)) + geom_boxplot() + labs(title = "Distribution on time spent on email weekly", x = "Minutes per week", y = "") + theme_clean() + NULL
+
+ggplot(data = email_visualize, aes(x = email)) + geom_histogram() + labs(title = "Distribution on time spent on email weekly", x = "Minutes per week", y = "Number of people") + theme_clean() + NULL
+                        
+#95% CI bootstrap for mean time Americans spend on email weekly
+library(infer)
+
+email_95 <- email_visualize %>%
+  specify(response = email) %>%
+  generate (reps = 1000, type = "bootstrap") %>%
+  calculate (stat = "mean")
+
+email_95_ci <- email_95 %>%
+    get_confidence_interval(level = 0.95, type = "percentile")
+
+email_95_ci %>%
+  mutate(lower_ci = lower_ci/60, upper_ci = upper_ci/60)
+
+#99% CI bootstrap for mean time Americans spend on email weekly
+email_99 <- email_visualize %>%
+  specify(response = email) %>%
+  generate (reps = 1000, type = "bootstrap") %>%
+  calculate (stat = "mean")
+
+email_99_ci <- email_99 %>%
+    get_confidence_interval(level = 0.99, type = "percentile")
+
+email_99_ci
+```
+
+> Considering several outliers it is better to use the median number as a measure of the typical amount American spend on their email weekly. The mean would be skewed to the right.
+
+> A 99% interval would be wider than the 95% one because it includes more variables of the sample. 

@@ -49,7 +49,7 @@ disqusShortname = ""
 
     [[params.navigation.links]]
       name = "Finance"
-      url = "blogs/project_stocks"
+      url = "blogs/project_finance"
 
     [[params.navigation.links]]
       name = "Entertainment"
@@ -108,7 +108,7 @@ disqusShortname = ""
 
     [[params.tiles.showcase]]
       title = "Entertainment"
-      subtitle = "Which countries consume the most alcohol?"
+      subtitle = "Analysing of IMDB movies and alcohol consumption"
       image = "pic02.jpg"
      url = "blogs/project_alcohol"
 

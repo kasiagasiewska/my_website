@@ -5,7 +5,7 @@ categories:
 date: "2017-10-31T21:28:43-05:00"
 description: ""
 draft: false
-image: pic05.jpg
+image: pic01.jpg
 keywords: ""
 slug: alcohol
 title: Alcohol Consumption

@@ -132,7 +132,7 @@ disqusShortname = ""
 
     [[params.tiles.showcase]]
       title = "Economy"
-      subtitle = "Looking into GDP trends in 3 countries"
+      subtitle = "Looking into GDP trends and other global data"
       image = "pic06.jpg"
       url = "blogs/project_GDP"
     # You can make more showcases by copy and pasting the code above

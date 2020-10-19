@@ -104,7 +104,7 @@ disqusShortname = ""
       title = "Economy"
       subtitle = "Exploring stock behaviour and GDP trends"
       image = "pic01.jpg"
-      url = "blogs/project_stocks_GDP"
+      url = "blogs/project_finance"
 
     [[params.tiles.showcase]]
       title = "Entertainment"
@@ -119,8 +119,8 @@ disqusShortname = ""
       url = "blogs/project_trump"
 
     [[params.tiles.showcase]]
-      title = "Climate"
-      subtitle = "Analysing temperature anomalies throughout the century"
+      title = "Climate & COVID"
+      subtitle = "Analysing temperature anomalies and COVID mortality rates"
       image = "pic04.jpg"
       url = "blogs/project_climate"
 

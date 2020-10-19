@@ -1,0 +1,102 @@
+---
+title: "Session 4: Homework 2"
+author: "Aman Sharma, Christoph Sieker, Kasia Gasiewska, Peter Moravec, Philippe Schrage, Satyam Gorry"
+date: "04/10/2020"
+output:
+  html_document:
+    theme: flatly
+    highlight: zenburn
+    number_sections: yes
+    toc: yes
+    toc_float: yes
+    code_folding: show
+---
+
+
+
+<div id="cdc-covid-19-public-use-data" class="section level1">
+<h1>CDC COVID-19 Public Use Data</h1>
+<pre class="r"><code># file contains 11 variables and 3.66m rows and is well over 380Mb. 
+# It will take time to download
+
+# URL link to CDC to download data
+url &lt;- &quot;https://data.cdc.gov/api/views/vbim-akqf/rows.csv?accessType=DOWNLOAD&quot;
+
+covid_data &lt;- vroom::vroom(url)%&gt;% # If vroom::vroom(url) doesn&#39;t work, use read_csv(url)
+  clean_names()</code></pre>
+<div id="covid-death-by-age-group-sex-and-presence-of-co-morbidities" class="section level2">
+<h2>Covid death % by age group, sex and presence of co-morbidities</h2>
+<pre class="r"><code>#glimpse(covid_data)
+#Data cleaning
+
+cleaning_covid_data &lt;- covid_data %&gt;% 
+  filter(medcond_yn != &quot;Missing&quot;) %&gt;% 
+  filter(medcond_yn != &quot;Unknown&quot;) %&gt;% 
+  filter(death_yn != &quot;Unknown&quot;) %&gt;% 
+  filter(death_yn != &quot;Missing&quot;) %&gt;%
+  filter(age_group != &quot;Unknown&quot;) %&gt;% 
+  filter(sex != &quot;Missing&quot;) %&gt;% 
+  filter(sex != &quot;Unknown&quot;) %&gt;% 
+  filter(sex != &quot;Other&quot;)
+
+#glimpse(cleaning_covid_data)
+
+#Adding the death percentage
+
+covid_deaths &lt;- cleaning_covid_data %&gt;% 
+  group_by(age_group,sex,medcond_yn,death_yn) %&gt;% 
+  count() %&gt;% 
+  pivot_wider(names_from = death_yn, values_from = n) %&gt;%
+  mutate(death_percentage = Yes/(Yes+No))
+
+#glimpse(covid_deaths)</code></pre>
+<pre class="r"><code>#Change label names
+covid_deaths$medcond_yn_names &lt;- factor(covid_deaths$medcond_yn,
+levels = c(&quot;Yes&quot;, &quot;No&quot;),
+labels = c(&quot;With comorbidities&quot;, &quot;Without comorbidities&quot;))
+
+#glimpse(covid_deaths)
+
+#Graphical reflection
+ggplot(data = covid_deaths, aes(x = age_group, y = death_percentage)) + geom_col(fill = &quot;#6b7ca4&quot;, show.legend = FALSE) +  geom_text(aes(label = round(death_percentage*100, 1), hjust = 0.6)) + labs(title = &quot;Covid death % by age group, sex and presence of co-morbidities&quot;, caption = &quot;Source:CDC&quot;) + theme_bw() + theme(axis.title.x = element_blank(), axis.title.y = element_blank()) + scale_y_continuous(labels = scales::percent) + coord_flip() + facet_grid(medcond_yn_names ~ sex)</code></pre>
+<p><img src="/blogs/project_climate/blog8_files/figure-html/unnamed-chunk-3-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="covid-death-rate-by-age-group-sex-and-whether-patient-was-admitted-to-icu" class="section level2">
+<h2>Covid death rate by age group, sex and whether patient was admitted to ICU</h2>
+<pre class="r"><code>#glimpse(covid_data)
+#Data cleaning
+
+cleaning_covid_icu &lt;- covid_data %&gt;% 
+  filter(icu_yn != &quot;Missing&quot;) %&gt;% 
+  filter(icu_yn != &quot;Unknown&quot;) %&gt;%
+  filter(age_group != &quot;Unknown&quot;) %&gt;% 
+  filter(sex != &quot;Missing&quot;) %&gt;% 
+  filter(sex != &quot;Unknown&quot;) %&gt;% 
+  filter(sex != &quot;Other&quot;) %&gt;% 
+  filter(death_yn != &quot;Unknown&quot;) %&gt;% 
+  filter(death_yn != &quot;Missing&quot;)
+
+#glimpse(cleaning_covid_icu)
+
+#Adding the death percentage
+
+icu_covid &lt;- cleaning_covid_icu %&gt;% 
+  group_by(age_group,sex,icu_yn,death_yn) %&gt;% 
+  count() %&gt;% 
+  pivot_wider(names_from = death_yn, values_from = n) %&gt;% 
+  summarize(death_percentage = Yes/(Yes+No))
+
+#glimpse(icu_covid)</code></pre>
+<pre class="r"><code>#Change label names
+icu_covid$icu_yn_names &lt;- factor(icu_covid$icu_yn,
+levels = c(&quot;Yes&quot;, &quot;No&quot;),
+labels = c(&quot;Admitted to ICU&quot;, &quot;No ICU&quot;))
+
+#glimpse(icu_covid)
+
+#Graphical reflection
+ggplot(data = icu_covid, aes(x = age_group, y = death_percentage)) + geom_col(fill = &quot;#fe9481&quot;, show.legend = FALSE) + geom_text(aes(label = round(death_percentage*100, 1), hjust = 0.6)) + labs(title = &quot;Covid death % by age group, sex and whether patient was admitted to ICU&quot;, caption = &quot;Source:CDC&quot;) + theme_bw() + theme(axis.title.x = element_blank(), axis.title.y = element_blank()) + scale_y_continuous(labels = scales::percent) + coord_flip() + facet_grid(icu_yn_names ~ sex)</code></pre>
+<p><img src="/blogs/project_climate/blog8_files/figure-html/unnamed-chunk-5-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p><img src="/Users/kasia/Desktop/LBS/Data Analytics/my_website/images/covid_death_rate_comorbidities.png" width="100%" style="display: block; margin: auto;" /><img src="/Users/kasia/Desktop/LBS/Data Analytics/my_website/images/covid_death_rate_icu.png" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+</div>

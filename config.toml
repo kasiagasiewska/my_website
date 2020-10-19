@@ -147,7 +147,7 @@ disqusShortname = ""
   # Section Type Two
   [params.two]
     enable = true
-    title = "A little bit about me"
+    title = "A little bit about me:"
     subtitle = """My name is Kasia and I come from Poland! I came to the UK 5 years ago to study Philosophy, Politics and Economics. Later I moved to London to work for a bit and now I am doing my Masters at London Business School! Looking forward to showing you my cool projects."""
     buttonText = "Get Started"
     url = "blogs/projects"

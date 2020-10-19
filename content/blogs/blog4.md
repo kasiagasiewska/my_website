@@ -8,5 +8,5 @@ draft: false
 image: pic04.jpg
 keywords: ""
 slug: climate
-title: Climate
+title: Climate Change
 ---

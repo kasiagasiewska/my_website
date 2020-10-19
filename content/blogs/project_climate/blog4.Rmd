@@ -75,7 +75,7 @@ glimpse(tidyweather)
 #Preparing the dataset for plotting
 
 tidyweather_new <- tidyweather %>%
-  mutate(ymd(paste(as.character(Year), month, "1")),
+  mutate(date = ymd(paste(as.character(Year), month, "1")),
          month = month(date, label=TRUE),
          year = year(date))
 
@@ -202,4 +202,3 @@ percentile_ci
 ## Comment
 
 > We have found a confidence interval using two methods. The results show us that since 2011 the average change in global temperature has been 0.97, just under the 1 degree threshold. However, based on the standard error of this dataset we can be 95% certain that the population's mean lies within a range that includes values as high as 1.03 degrees of global temperature change.
-

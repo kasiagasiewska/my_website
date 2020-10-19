@@ -113,7 +113,7 @@ disqusShortname = ""
      url = "blogs/project_alcohol"
 
     [[params.tiles.showcase]]
-      title = "Politics"
+      title = "Politics & Society"
       subtitle = "Estimating Net Approval for Donald Trump"
       image = "pic03.jpg"
       url = "blogs/project_trump"

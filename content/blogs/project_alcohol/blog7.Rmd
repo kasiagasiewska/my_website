@@ -1,0 +1,187 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:42:51-05:00"
+description: Enter to learn why do some movies earn more than others!
+draft: false
+image: pic07.jpg
+keywords: ""
+slug: movies
+title: Movies Analysis
+---
+
+
+```{r, setup}
+knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = "center"
+)
+```
+
+
+```{r load-libraries, warning=FALSE, message=FALSE, echo=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(lubridate)
+library(fivethirtyeight)
+library(here)
+library(skimr)
+library(janitor)
+library(vroom)
+library(tidyquant)
+```
+
+# Analysis of movies - IMDB dataset
+
+## Loading the data  
+
+```{r,load_movies, warning=FALSE, echo=FALSE, message=FALSE}
+
+movies <- read_csv(here::here("data", "movies.csv"))
+glimpse(movies)
+skim(movies)
+
+# Counting missing values in the data
+anyNA(movies)
+
+# Checking for duplicates
+dupes <- movies %>%
+  select(title, director, year, duration) %>%
+  duplicated()
+
+table(dupes)["TRUE"]
+
+# Creating a cleaned dataset
+movies_clean <- movies[!dupes,]
+
+```
+
+## Finding the number of movies by genre
+
+```{r, clean_up}
+
+movies_clean %>%
+  group_by(genre) %>%
+  count(sort=TRUE)
+
+```
+
+## Finding the return on budget by genre
+
+```{r, echo=FALSE}
+
+movies_by_ratio <- movies_clean %>%
+  group_by(genre)
+summarise(movies_by_ratio, 
+          mean_gross = mean(gross), 
+          mean_budget = mean(budget), 
+          return_on_budget = mean_gross/mean_budget) %>%
+arrange(desc(return_on_budget))
+
+```
+
+## Finding the top 15 directors by gross earnings
+
+```{r, echo=FALSE}
+
+movies_director <- movies_clean %>%
+  group_by(director) %>%
+  summarise(total_gross = sum(gross, na.rm=TRUE), 
+            mean_gross = mean(gross, na.rm=TRUE),
+            median_gross = median(gross,na.rm=TRUE),
+            sd_gross = sd(gross, na.rm=TRUE),
+            count = n()) %>%
+  arrange(desc(total_gross))
+
+top15_director <- head(movies_director,15)
+
+top15_director
+
+```
+
+## Summary statistics of movie ratings by genre and plotting a histogram
+
+```{r, echo=FALSE}
+
+movies_ratings <- movies_clean %>%
+  group_by(genre) %>%
+  summarise(mean_rating = mean(rating, na.rm=TRUE),
+            median_rating = median(rating, na.rm=TRUE),
+            max_rating = max(rating, na.rm=TRUE), 
+            min_rating = min(rating, na.rm=TRUE), 
+            sd_rating = sd(rating, na.rm=TRUE))
+
+movies_ratings
+
+ggplot(movies, 
+       aes(x = rating)) + 
+  geom_histogram() + 
+  scale_y_log10() + 
+  facet_wrap(~ genre)
+
+```
+
+## Use `ggplot` to answer the following
+
+  - Examine the relationship between `gross` and `cast_facebook_likes`. Produce a scatterplot and write one sentence discussing whether the number of facebook likes that the cast has received is likely to be a good predictor of how much money a movie will make at the box office. What variable are you going to map to the Y- and X- axes?
+  
+```{r, echo=FALSE}
+ggplot(movies_clean, 
+       aes(x = cast_facebook_likes, 
+          y = gross)) + 
+  geom_point() + 
+  geom_smooth(method=lm) +  
+  scale_x_log10()  + 
+  scale_y_log10() + 
+  NULL
+```
+
+## Comment gross_fblikes
+
+We chose the Gross as the Y-variable and the Facebook Likes as the X-variable because we believed Gross to be the dependent variable and Facebook Likes the independent one. On average, the number of facebook likes seems to be a good predictor of how well a movie will fare in the box office, however, there are many data points which lie outside this observation and which prove that this isn't always the case.  
+
+
+  - Examine the relationship between `gross` and `budget`. Produce a scatterplot and write one sentence discussing whether budget is likely to be a good predictor of how much money a movie will make at the box office.
+
+```{r, gross_on_budget}
+ggplot(movies_clean, 
+       aes(x = budget, 
+           y = gross)) + 
+  geom_point() + 
+  geom_smooth(method=lm) +  
+  scale_x_log10()  + 
+  scale_y_log10() + 
+  NULL
+```
+
+## Comment gross_budget
+
+>The tendency seems to indicate that the bigger the budget, the higher the movie will gross. This is especially true for movies with high budgets as we see a concentration of datapoints at that level. Some dataponts indicate that it is not always the case as many movies fall outside this high budget - high gross correlation. However, the overarching sense is that budget is likely to be a good predictor of how much money a movie will make at the box office.
+  
+
+```{r, gross_on_rating}
+ggplot(movies_clean, 
+       aes(x = rating,
+           y = gross)) + 
+  geom_point() + 
+  geom_smooth(method=lm) +  
+  scale_x_log10()  + 
+  scale_y_log10() + 
+  NULL
+```
+
+## Comment Gross_IMDB
+
+> According to the datapoints, IMDB ratings tend to be higher for movies which have grossed highly indicating that IMDB ratings could be a good predictor of how much a movie will make. In reality however, its much more complicated to determine if IMDB scores are high because a movie has grossed highly, in which case it isn't so much a correlation as a causality. 
+

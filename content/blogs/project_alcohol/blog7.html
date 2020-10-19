@@ -1,0 +1,414 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:42:51-05:00"
+description: Enter to learn why do some movies earn more than others!
+draft: false
+image: pic07.jpg
+keywords: ""
+slug: movies
+title: Movies Analysis
+---
+
+
+
+<pre class="r"><code>knitr::opts_chunk$set(
+  message = FALSE, 
+  warning = FALSE, 
+  tidy=FALSE,     # display code as typed
+  size=&quot;small&quot;)   # slightly smaller font for code
+options(digits = 3)
+
+# default figure size
+knitr::opts_chunk$set(
+  fig.width=6.75, 
+  fig.height=6.75,
+  fig.align = &quot;center&quot;
+)</code></pre>
+<div id="analysis-of-movies---imdb-dataset" class="section level1">
+<h1>Analysis of movies - IMDB dataset</h1>
+<div id="loading-the-data" class="section level2">
+<h2>Loading the data</h2>
+<pre><code>## Rows: 2,961
+## Columns: 11
+## $ title               &lt;chr&gt; &quot;Avatar&quot;, &quot;Titanic&quot;, &quot;Jurassic World&quot;, &quot;The Aveng…
+## $ genre               &lt;chr&gt; &quot;Action&quot;, &quot;Drama&quot;, &quot;Action&quot;, &quot;Action&quot;, &quot;Action&quot;, …
+## $ director            &lt;chr&gt; &quot;James Cameron&quot;, &quot;James Cameron&quot;, &quot;Colin Trevorro…
+## $ year                &lt;dbl&gt; 2009, 1997, 2015, 2012, 2008, 1999, 1977, 2015, 2…
+## $ duration            &lt;dbl&gt; 178, 194, 124, 173, 152, 136, 125, 141, 164, 93, …
+## $ gross               &lt;dbl&gt; 7.61e+08, 6.59e+08, 6.52e+08, 6.23e+08, 5.33e+08,…
+## $ budget              &lt;dbl&gt; 2.37e+08, 2.00e+08, 1.50e+08, 2.20e+08, 1.85e+08,…
+## $ cast_facebook_likes &lt;dbl&gt; 4834, 45223, 8458, 87697, 57802, 37723, 13485, 92…
+## $ votes               &lt;dbl&gt; 886204, 793059, 418214, 995415, 1676169, 534658, …
+## $ reviews             &lt;dbl&gt; 3777, 2843, 1934, 2425, 5312, 3917, 1752, 1752, 3…
+## $ rating              &lt;dbl&gt; 7.9, 7.7, 7.0, 8.1, 9.0, 6.5, 8.7, 7.5, 8.5, 7.2,…</code></pre>
+<table>
+<caption>(#tab:load_movies)Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">movies</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">2961</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">11</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">3</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">8</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
+<th align="right">n_unique</th>
+<th align="right">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">title</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">83</td>
+<td align="right">0</td>
+<td align="right">2907</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">genre</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">11</td>
+<td align="right">0</td>
+<td align="right">17</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">director</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">32</td>
+<td align="right">0</td>
+<td align="right">1366</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table style="width:100%;">
+<colgroup>
+<col width="18%" />
+<col width="9%" />
+<col width="12%" />
+<col width="8%" />
+<col width="8%" />
+<col width="6%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="5%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">year</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2.00e+03</td>
+<td align="right">9.95e+00</td>
+<td align="right">1920.0</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.00e+03</td>
+<td align="right">2.01e+03</td>
+<td align="right">2.02e+03</td>
+<td align="left">▁▁▁▂▇</td>
+</tr>
+<tr class="even">
+<td align="left">duration</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.10e+02</td>
+<td align="right">2.22e+01</td>
+<td align="right">37.0</td>
+<td align="right">9.50e+01</td>
+<td align="right">1.06e+02</td>
+<td align="right">1.19e+02</td>
+<td align="right">3.30e+02</td>
+<td align="left">▃▇▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">gross</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">5.81e+07</td>
+<td align="right">7.25e+07</td>
+<td align="right">703.0</td>
+<td align="right">1.23e+07</td>
+<td align="right">3.47e+07</td>
+<td align="right">7.56e+07</td>
+<td align="right">7.61e+08</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">budget</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4.06e+07</td>
+<td align="right">4.37e+07</td>
+<td align="right">218.0</td>
+<td align="right">1.10e+07</td>
+<td align="right">2.60e+07</td>
+<td align="right">5.50e+07</td>
+<td align="right">3.00e+08</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">cast_facebook_likes</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.24e+04</td>
+<td align="right">2.05e+04</td>
+<td align="right">0.0</td>
+<td align="right">2.24e+03</td>
+<td align="right">4.60e+03</td>
+<td align="right">1.69e+04</td>
+<td align="right">6.57e+05</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">votes</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.09e+05</td>
+<td align="right">1.58e+05</td>
+<td align="right">5.0</td>
+<td align="right">1.99e+04</td>
+<td align="right">5.57e+04</td>
+<td align="right">1.33e+05</td>
+<td align="right">1.69e+06</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">reviews</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">5.03e+02</td>
+<td align="right">4.94e+02</td>
+<td align="right">2.0</td>
+<td align="right">1.99e+02</td>
+<td align="right">3.64e+02</td>
+<td align="right">6.31e+02</td>
+<td align="right">5.31e+03</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">rating</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.39e+00</td>
+<td align="right">1.05e+00</td>
+<td align="right">1.6</td>
+<td align="right">5.80e+00</td>
+<td align="right">6.50e+00</td>
+<td align="right">7.10e+00</td>
+<td align="right">9.30e+00</td>
+<td align="left">▁▁▆▇▁</td>
+</tr>
+</tbody>
+</table>
+<pre><code>## [1] FALSE</code></pre>
+<pre><code>## TRUE 
+##   54</code></pre>
+</div>
+<div id="finding-the-number-of-movies-by-genre" class="section level2">
+<h2>Finding the number of movies by genre</h2>
+<pre class="r"><code>movies_clean %&gt;%
+  group_by(genre) %&gt;%
+  count(sort=TRUE)</code></pre>
+<pre><code>## # A tibble: 17 x 2
+## # Groups:   genre [17]
+##    genre           n
+##    &lt;chr&gt;       &lt;int&gt;
+##  1 Comedy        844
+##  2 Action        719
+##  3 Drama         484
+##  4 Adventure     281
+##  5 Crime         198
+##  6 Biography     135
+##  7 Horror        128
+##  8 Animation      35
+##  9 Fantasy        26
+## 10 Documentary    25
+## 11 Mystery        15
+## 12 Sci-Fi          7
+## 13 Family          3
+## 14 Musical         2
+## 15 Romance         2
+## 16 Western         2
+## 17 Thriller        1</code></pre>
+</div>
+<div id="finding-the-return-on-budget-by-genre" class="section level2">
+<h2>Finding the return on budget by genre</h2>
+<pre><code>## # A tibble: 17 x 4
+##    genre       mean_gross mean_budget return_on_budget
+##    &lt;chr&gt;            &lt;dbl&gt;       &lt;dbl&gt;            &lt;dbl&gt;
+##  1 Musical      92084000     3189500          28.9    
+##  2 Family      149160478.   14833333.         10.1    
+##  3 Western      20821884     3465000           6.01   
+##  4 Documentary  17353973.    5887852.          2.95   
+##  5 Horror       37782310.   13804379.          2.74   
+##  6 Fantasy      41902674.   18484615.          2.27   
+##  7 Comedy       42487808.   24458506.          1.74   
+##  8 Mystery      69117136.   41500000           1.67   
+##  9 Animation    98433792.   61701429.          1.60   
+## 10 Biography    45201805.   28543696.          1.58   
+## 11 Adventure    94350236.   64692313.          1.46   
+## 12 Drama        36754959.   25832605.          1.42   
+## 13 Crime        37601525.   26527405.          1.42   
+## 14 Romance      31264848.   25107500           1.25   
+## 15 Action       86270343.   70774558.          1.22   
+## 16 Sci-Fi       29788371.   27607143.          1.08   
+## 17 Thriller         2468      300000           0.00823</code></pre>
+</div>
+<div id="finding-the-top-15-directors-by-gross-earnings" class="section level2">
+<h2>Finding the top 15 directors by gross earnings</h2>
+<pre><code>## # A tibble: 15 x 6
+##    director          total_gross mean_gross median_gross   sd_gross count
+##    &lt;chr&gt;                   &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt;      &lt;dbl&gt; &lt;int&gt;
+##  1 Steven Spielberg   4014061704 174524422.   164435221  101421051.    23
+##  2 Michael Bay        2195443511 182953626.   168468240. 125789167.    12
+##  3 James Cameron      1909725910 318287652.   175562880. 309171337.     6
+##  4 Christopher Nolan  1813227576 226653447    196667606. 187224133.     8
+##  5 George Lucas       1741418480 348283696    380262555  146193880.     5
+##  6 Robert Zemeckis    1619309108 124562239.   100853835   91300279.    13
+##  7 Tim Burton         1557078534 111219895.    69791834   99304293.    14
+##  8 Sam Raimi          1443167519 180395940.   138480208  174705230.     8
+##  9 Clint Eastwood     1378321100  72543216.    46700000   75487408.    19
+## 10 Francis Lawrence   1358501971 271700394.   281666058  135437020.     5
+## 11 Ron Howard         1335988092 111332341    101587923   81933761.    12
+## 12 Gore Verbinski     1329600995 189942999.   123207194  154473822.     7
+## 13 Andrew Adamson     1137446920 284361730    279680930. 120895765.     4
+## 14 Shawn Levy         1129750988 102704635.    85463309   65484773.    11
+## 15 Ridley Scott       1128857598  80632686.    47775715   68812285.    14</code></pre>
+</div>
+<div id="summary-statistics-of-movie-ratings-by-genre-and-plotting-a-histogram" class="section level2">
+<h2>Summary statistics of movie ratings by genre and plotting a histogram</h2>
+<pre><code>## # A tibble: 17 x 6
+##    genre       mean_rating median_rating max_rating min_rating sd_rating
+##    &lt;chr&gt;             &lt;dbl&gt;         &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;
+##  1 Action             6.23          6.3         9          2.1     1.04 
+##  2 Adventure          6.51          6.6         8.6        2.3     1.11 
+##  3 Animation          6.65          6.9         8          4.5     0.968
+##  4 Biography          7.11          7.2         8.9        4.5     0.760
+##  5 Comedy             6.11          6.2         8.8        1.9     1.02 
+##  6 Crime              6.92          6.9         9.3        4.8     0.853
+##  7 Documentary        6.66          7.4         8.5        1.6     1.77 
+##  8 Drama              6.74          6.8         8.8        2.1     0.915
+##  9 Family             6.5           5.9         7.9        5.7     1.22 
+## 10 Fantasy            6.08          6.2         7.9        4.3     0.953
+## 11 Horror             5.79          5.85        8.5        3.6     0.987
+## 12 Musical            6.75          6.75        7.2        6.3     0.636
+## 13 Mystery            6.84          6.7         8.5        4.6     0.910
+## 14 Romance            6.65          6.65        7.1        6.2     0.636
+## 15 Sci-Fi             6.66          6.4         8.2        5       1.09 
+## 16 Thriller           4.8           4.8         4.8        4.8    NA    
+## 17 Western            5.70          5.70        7.3        4.1     2.26</code></pre>
+<p><img src="/blogs/blog7_files/figure-html/unnamed-chunk-3-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="use-ggplot-to-answer-the-following" class="section level2">
+<h2>Use <code>ggplot</code> to answer the following</h2>
+<ul>
+<li>Examine the relationship between <code>gross</code> and <code>cast_facebook_likes</code>. Produce a scatterplot and write one sentence discussing whether the number of facebook likes that the cast has received is likely to be a good predictor of how much money a movie will make at the box office. What variable are you going to map to the Y- and X- axes?</li>
+</ul>
+<p><img src="/blogs/blog7_files/figure-html/unnamed-chunk-4-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="comment-gross_fblikes" class="section level2">
+<h2>Comment gross_fblikes</h2>
+<p>We chose the Gross as the Y-variable and the Facebook Likes as the X-variable because we believed Gross to be the dependent variable and Facebook Likes the independent one. On average, the number of facebook likes seems to be a good predictor of how well a movie will fare in the box office, however, there are many data points which lie outside this observation and which prove that this isn’t always the case.</p>
+<ul>
+<li>Examine the relationship between <code>gross</code> and <code>budget</code>. Produce a scatterplot and write one sentence discussing whether budget is likely to be a good predictor of how much money a movie will make at the box office.</li>
+</ul>
+<pre class="r"><code>ggplot(movies_clean, 
+       aes(x = budget, 
+           y = gross)) + 
+  geom_point() + 
+  geom_smooth(method=lm) +  
+  scale_x_log10()  + 
+  scale_y_log10() + 
+  NULL</code></pre>
+<p><img src="/blogs/blog7_files/figure-html/gross_on_budget-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="comment-gross_budget" class="section level2">
+<h2>Comment gross_budget</h2>
+<blockquote>
+<p>The tendency seems to indicate that the bigger the budget, the higher the movie will gross. This is especially true for movies with high budgets as we see a concentration of datapoints at that level. Some dataponts indicate that it is not always the case as many movies fall outside this high budget - high gross correlation. However, the overarching sense is that budget is likely to be a good predictor of how much money a movie will make at the box office.</p>
+</blockquote>
+<pre class="r"><code>ggplot(movies_clean, 
+       aes(x = rating,
+           y = gross)) + 
+  geom_point() + 
+  geom_smooth(method=lm) +  
+  scale_x_log10()  + 
+  scale_y_log10() + 
+  NULL</code></pre>
+<p><img src="/blogs/blog7_files/figure-html/gross_on_rating-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="comment-gross_imdb" class="section level2">
+<h2>Comment Gross_IMDB</h2>
+<blockquote>
+<p>According to the datapoints, IMDB ratings tend to be higher for movies which have grossed highly indicating that IMDB ratings could be a good predictor of how much a movie will make. In reality however, its much more complicated to determine if IMDB scores are high because a movie has grossed highly, in which case it isn’t so much a correlation as a causality.</p>
+</blockquote>
+</div>
+</div>

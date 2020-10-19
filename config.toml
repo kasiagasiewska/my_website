@@ -110,7 +110,7 @@ disqusShortname = ""
       title = "Climate"
       subtitle = "Analysing temperature anomalies throughout the century"
       image = "pic04.jpg"
-      url = "projects/project_climate"
+      url = "blogs/project_climate"
 
     [[params.tiles.showcase]]
       title = "Consequa"

@@ -1,9 +1,9 @@
 ---
 date: "2017-10-31T22:27:21-05:00"
 draft: false
-image: pic044.jpg
+image: pic066.jpg
 slug: blogs
-title: Climate
+title: Gross Domestic Product
 ---
 
-My blogs about climate change and temperature anomalies
+My blog about GDP evolution in the US, India and Germany

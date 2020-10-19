@@ -113,7 +113,7 @@ disqusShortname = ""
       url = "blogs/project_climate"
 
     [[params.tiles.showcase]]
-      title = "Consequa"
+      title = "Society"
       subtitle = "Investigating the relationship between gender, salary and experience"
       image = "pic05.jpg"
       url = "blogs/project_gender"

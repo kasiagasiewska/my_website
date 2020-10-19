@@ -49,11 +49,11 @@ disqusShortname = ""
 
     [[params.navigation.links]]
       name = "Kasia's Portfolio"
-      url = "blogs"
+      url = "blogs/projects"
 
     [[params.navigation.links]]
       name = "Regression Project"
-      url = "blogs/ipsum"
+      url = "blogs/projects"
 
     #[[params.navigation.links]]
       #name = "Homework 2"

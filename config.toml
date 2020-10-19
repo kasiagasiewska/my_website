@@ -48,16 +48,28 @@ disqusShortname = ""
       url = "#"
 
     [[params.navigation.links]]
-      name = "Kasia's Portfolio"
-      url = "blogs/projects"
+      name = "Finance"
+      url = "blogs/project_stocks"
 
     [[params.navigation.links]]
       name = "Entertainment"
       url = "blogs/project_alcohol"
 
-    #[[params.navigation.links]]
-      #name = "Homework 2"
-      #url = "elements.html"
+    [[params.navigation.links]]
+      name = "Politics"
+      url = "blogs/project_trump"
+      
+      [[params.navigation.links]]
+      name = "Climate"
+      url = "blogs/project_climate"
+      
+      [[params.navigation.links]]
+      name = "Society"
+      url = "blogs/project_gender"
+      
+      [[params.navigation.links]]
+      name = "Economics"
+      url = "blogs/project_GDP"
 
     # Add custom links here by uncommenting code below. To remove links just delete
     # the [[params.navigation.links]] map associated with that link. Copy and paste

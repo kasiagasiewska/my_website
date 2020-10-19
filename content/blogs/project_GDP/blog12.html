@@ -1,0 +1,198 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:42:51-05:00"
+description: Enter to see the links between GDP, life expectancy, HIV prevalence and many others!
+draft: false
+image: pic12.jpg
+keywords: ""
+slug: economics
+title: Our World in Data
+---
+
+
+
+<div id="exploring-links-between-gdp-life-expectancy-hiv-prevalence-mortality-and-fertility-and-others" class="section level1">
+<h1>Exploring links between GDP, life expectancy, HIV prevalence, mortality and fertility and others</h1>
+<pre class="r"><code># load gapminder HIV data
+hiv &lt;- read_csv(here::here(&quot;data&quot;,&quot;adults_with_hiv_percent_age_15_49.csv&quot;))
+life_expectancy &lt;- read_csv(here::here(&quot;data&quot;,&quot;life_expectancy_years.csv&quot;))
+
+# get World bank data using wbstats
+indicators &lt;- c(&quot;SP.DYN.TFRT.IN&quot;,&quot;SE.PRM.NENR&quot;, &quot;SH.DYN.MORT&quot;, &quot;NY.GDP.PCAP.KD&quot;)
+
+library(wbstats)
+
+worldbank_data &lt;- read_csv(here::here(&quot;data&quot;,&quot;worldbank_data.csv&quot;))
+
+# get a dataframe of information regarding countries, indicators, sources, regions, indicator topics, lending types, income levels,  from the World Bank API 
+countries &lt;-  read.csv(here::here(&quot;data&quot;,&quot;countries.csv&quot;))</code></pre>
+<p>Working with the following three data frames:</p>
+<ul>
+<li>hiv</li>
+<li>life_expectancy</li>
+<li>worldbank_data</li>
+</ul>
+<p>As a first step, we need to tidy the data of hiv and life_expectancy.</p>
+<pre class="r"><code>#glimpse(hiv)
+#glimpse(life_expectancy)
+#glimpse(worldbank_data)</code></pre>
+<pre class="r"><code>library(countrycode)
+
+#tidy the data fo hiv and life_expectancy
+hiv_tidy &lt;- hiv %&gt;%
+  pivot_longer(cols = c(&quot;1979&quot;:&quot;2011&quot;),
+               names_to = &quot;date&quot; , 
+               values_to = &quot;hiv_prevalence&quot;, 
+               values_drop_na= FALSE)
+
+
+life_expectancy_tidy &lt;- life_expectancy %&gt;%
+  pivot_longer(cols = c(&quot;1800&quot;:&quot;2100&quot;),
+   names_to = &quot;date&quot; , 
+   values_to = &quot;life_expectancy&quot;, 
+   values_drop_na= FALSE)
+
+#Preparation for left join 
+life_expectancy_tidy$date &lt;- as.double(life_expectancy_tidy$date)
+hiv_tidy$date &lt;- as.double(hiv_tidy$date)
+
+#Left join the data frames
+three_combined &lt;- left_join(worldbank_data,life_expectancy_tidy) %&gt;%
+  left_join(.,hiv_tidy) %&gt;%
+   mutate(region= countrycode(sourcevar = country, origin = &quot;country.name&quot;,destination = &quot;region&quot;))
+
+three_combined</code></pre>
+<pre><code>## # A tibble: 12,369 x 11
+##    iso2c iso3c country  date NY.GDP.PCAP.KD SE.PRM.NENR SH.DYN.MORT
+##    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt;          &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
+##  1 AW    ABW   Aruba    1960             NA          NA          NA
+##  2 AW    ABW   Aruba    1961             NA          NA          NA
+##  3 AW    ABW   Aruba    1962             NA          NA          NA
+##  4 AW    ABW   Aruba    1963             NA          NA          NA
+##  5 AW    ABW   Aruba    1964             NA          NA          NA
+##  6 AW    ABW   Aruba    1965             NA          NA          NA
+##  7 AW    ABW   Aruba    1966             NA          NA          NA
+##  8 AW    ABW   Aruba    1967             NA          NA          NA
+##  9 AW    ABW   Aruba    1968             NA          NA          NA
+## 10 AW    ABW   Aruba    1969             NA          NA          NA
+## # … with 12,359 more rows, and 4 more variables: SP.DYN.TFRT.IN &lt;dbl&gt;,
+## #   life_expectancy &lt;dbl&gt;, hiv_prevalence &lt;dbl&gt;, region &lt;chr&gt;</code></pre>
+<div id="relationship-between-hiv-prevalence-and-life-expectancy" class="section level2">
+<h2>Relationship between HIV prevalence and life expectancy</h2>
+<pre class="r"><code>#Plotting two graphs, one for all countries, one focusing on the different regions
+ggplot(data = three_combined, aes(x = hiv_prevalence, y= life_expectancy )) + geom_point(alpha=0.4) + geom_smooth() + labs(title=&quot;Negative correlation between HIV prevalence and life expectancy&quot;,subtitle=&quot;HIV prevalence and life expectancy&quot;,x=&quot;HIV prevalence&quot;,y=&quot;Life expectancy&quot;) + theme_classic()</code></pre>
+<p><img src="/blogs/project_GDP/blog12_files/figure-html/unnamed-chunk-3-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data = three_combined, aes(x = hiv_prevalence, y= life_expectancy )) + geom_point(alpha=0.4) + geom_smooth(method=&quot;gam&quot;) + labs(title=&quot;Negative correlation between HIV prevalence and life expectancy&quot;,subtitle=&quot;HIV prevalence and life expectancy&quot;,x=&quot;HIV prevalence&quot;,y=&quot;Life expectancy&quot;) + theme_classic() + facet_wrap(~region, scales=&quot;free&quot;)</code></pre>
+<p><img src="/blogs/project_GDP/blog12_files/figure-html/unnamed-chunk-3-2.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#cleaning data before calculating correlation coefficient
+correlation_hiv_lifeexpectancy &lt;- three_combined %&gt;%
+  filter (!is.na(hiv_prevalence &amp; life_expectancy)) %&gt;%
+  select(hiv_prevalence, life_expectancy) %&gt;% 
+  cor()
+
+correlation_hiv_lifeexpectancy</code></pre>
+<pre><code>##                 hiv_prevalence life_expectancy
+## hiv_prevalence           1.000          -0.531
+## life_expectancy         -0.531           1.000</code></pre>
+<p>Overall, HIV and life expectancy are negatively correlated (p=-0.531). For regions like Sub-Saharan Africa the relationship seems rather clear, for other regions like East Asia &amp; Pacific it’s less obvious. Thus, in order to confirm a direct causal effect, a deeper investigation is necessary and also other variables should be considered.</p>
+</div>
+<div id="relationship-between-fertility-rate-and-gdp-per-capita" class="section level2">
+<h2>Relationship between fertility rate and GDP per capita</h2>
+<pre class="r"><code>#Plotting two graphs, one for all countries, one focusing on the different regions
+ggplot(data = three_combined, aes(x = NY.GDP.PCAP.KD, y= SP.DYN.TFRT.IN)) + geom_point(alpha=0.4) + geom_smooth() + labs(title=&quot;Better living standard and healthcare access leads to less children&quot;,subtitle=&quot;GDP per capita and fertility rate&quot;,x=&quot;GDP per capita&quot;,y=&quot;Fertility rate&quot;) + theme_classic()</code></pre>
+<p><img src="/blogs/project_GDP/blog12_files/figure-html/unnamed-chunk-4-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data = three_combined, aes(x = NY.GDP.PCAP.KD, y= SP.DYN.TFRT.IN)) + geom_point(alpha=0.4) + geom_smooth(method = lm) + labs(title=&quot;Better living standard and healthcare access leads to less children&quot;,subtitle=&quot;GDP per capita and fertility rate&quot;,x=&quot;GDP per capita&quot;,y=&quot;Fertility rate&quot;) + theme_classic() + facet_wrap(~region, scales=&quot;free&quot;)</code></pre>
+<p><img src="/blogs/project_GDP/blog12_files/figure-html/unnamed-chunk-4-2.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#cleaning data before calculating correlation coefficient
+correlation_fertility_gdp &lt;- three_combined %&gt;%
+  filter (!is.na(NY.GDP.PCAP.KD &amp; SP.DYN.TFRT.IN)) %&gt;%
+  select(NY.GDP.PCAP.KD, SP.DYN.TFRT.IN) %&gt;% 
+  cor()
+
+correlation_fertility_gdp</code></pre>
+<pre><code>##                NY.GDP.PCAP.KD SP.DYN.TFRT.IN
+## NY.GDP.PCAP.KD          1.000         -0.509
+## SP.DYN.TFRT.IN         -0.509          1.000</code></pre>
+<p>Fertility rate and GDP per capita seem to be negatively correlated. Especially Sub-Saharan Africa and South Asia and Latin America &amp; Caribbean are good examples for this relationship. Higher income might lead to better access to healthcare and contraceptives. This anaylsis is underlined by a correlation coefficient of -0.509</p>
+</div>
+<div id="regions-having-the-most-observations-with-missing-hiv-data" class="section level2">
+<h2>Regions having the most observations with missing HIV data</h2>
+<pre class="r"><code>#Filtering for 1979-2011 because hiv data is only available for this time frame and then calculating both absolute and relative value of missing hiv data
+hiv_miss &lt;- three_combined %&gt;%
+  group_by(region) %&gt;%
+  filter(date&gt;=1979) %&gt;%
+  filter(date&lt;=2011)  %&gt;%
+   summarize(NA_hiv = sum(is.na(hiv_prevalence)), NA_percentage = round (NA_hiv/n(), digits = 4)) %&gt;%
+  arrange(desc(NA_hiv))
+
+#Plot - absolute values
+ggplot(data = hiv_miss, aes(x = reorder(region, NA_hiv), y = NA_hiv)) + geom_col() + coord_flip() + geom_text(aes(label=NA_hiv), vjust=0.5,hjust=2,angle=0, color=&quot;red&quot;, size=3) + labs(title=&quot;Missing HIV prevalence observations&quot;,subtitle=&quot;Per region / absolute values&quot;, y=&quot;Missing HIV data&quot;,x=&quot;&quot;) + theme_economist_white()</code></pre>
+<p><img src="/blogs/project_GDP/blog12_files/figure-html/unnamed-chunk-5-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Plot - relative values
+ggplot(data = hiv_miss, aes(x = reorder(region, NA_percentage), y = NA_percentage)) + geom_col() + coord_flip() + geom_text(aes(label=scales::percent(NA_percentage)), vjust=0.5,hjust=2,angle=0, color=&quot;red&quot;, size=3) + labs(title=&quot;Missing HIV prevalence observations&quot;,subtitle=&quot;Per region / relative values&quot;, y=&quot;Missing HIV data&quot;,x=&quot;&quot;) + theme_economist_white()</code></pre>
+<p><img src="/blogs/project_GDP/blog12_files/figure-html/unnamed-chunk-5-2.png" width="648" style="display: block; margin: auto;" /></p>
+<p>Considering absolute values, Europe &amp; Central Asia are leading with the most missing values overall. However, considering proportion, it’s East Asia &amp; Pacific which are leading. Using the second analysis might be more helpful because not all regions do have the same number of countries.</p>
+</div>
+<div id="top-5-countries-with-the-greatestlowest-decrease-in-mortality-rate-per-region" class="section level2">
+<h2>Top 5 countries with the greatest/lowest decrease in mortality rate per region</h2>
+<pre class="r"><code>#Preparing data by filtering and untidying
+improvement &lt;- three_combined %&gt;%
+                select(c(&quot;country&quot;,&quot;region&quot;,&quot;date&quot;,&quot;SH.DYN.MORT&quot;)) %&gt;% 
+                filter(date== &quot;1960&quot;| date==&quot;2016&quot;) %&gt;%
+                pivot_wider(names_from=&quot;date&quot;, values_from=&quot;SH.DYN.MORT&quot;)
+
+colnames(improvement) = c(&quot;country&quot;,&quot;region&quot;,&quot;start&quot;,&quot;end&quot;)
+
+#Calculating change over the years
+impro_mortality &lt;- improvement %&gt;% 
+mutate(change_over_years=(end-start)/start) %&gt;% 
+group_by(region) %&gt;%
+summarize(country,change_over_years) %&gt;%
+arrange(region,desc(change_over_years))
+
+#top 5 per region
+best_five &lt;- impro_mortality %&gt;%
+            slice_min(order_by= change_over_years,n=5) %&gt;%
+            summarize(country,change_over_years)
+
+#Plotting
+ggplot(best_five,aes(x=reorder(country,change_over_years),y=abs(change_over_years))) +
+  geom_col(fill=&quot;dark green&quot;) + coord_flip()+ facet_wrap(~region,scales=&quot;free&quot;) + 
+  labs(title=&quot;Countries with the greatest decrease in mortality 1960-2016&quot;,subtitle=&quot;Top 5 countries per region &quot;,y=&quot;Change in mortality rate between 1960 and 2016&quot;,x=&quot;&quot;) +
+  geom_text(aes(label=scales::percent(change_over_years)), vjust=1,hjust=2, angle=0, color=&quot;black&quot;, size=2.5) </code></pre>
+<p><img src="/blogs/project_GDP/blog12_files/figure-html/unnamed-chunk-6-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#bottom 5 per region  
+worst_five &lt;- impro_mortality %&gt;%
+    slice_max(order_by= change_over_years,n=5) %&gt;%
+  summarize(country,change_over_years)
+
+#Plotting
+ggplot(worst_five,aes(x=reorder(country,change_over_years),y=abs(change_over_years))) +
+  geom_col(fill=&quot;dark red&quot;) + coord_flip()+ facet_wrap(~region,scales=&quot;free&quot;) + 
+  labs(title=&quot;Countries with the worst decrease in mortality 1960-2016&quot;,subtitle=&quot;Bottom 5 countries per region &quot;,y=&quot;Change in mortality rate between 1960 and 2016&quot;,x=&quot;&quot;) +
+  geom_text(aes(label=scales::percent(change_over_years)), vjust=1,hjust=2, angle=0, color=&quot;black&quot;, size=2.5) </code></pre>
+<p><img src="/blogs/project_GDP/blog12_files/figure-html/unnamed-chunk-6-2.png" width="648" style="display: block; margin: auto;" /></p>
+<p>It is important to mention that the study has various limits. First, many countries do not have data for the specific time frame leading to a potential fabrication of the data. A solution might have been to use the first and last available data points of each country, however, this would have greated another issue considering the fact of comparing different times frames in that case. Further, it is potentially not enough to compare only relative values. It is not a surprise that the most developed countries had the lowest margins of improvement considering their already high level at the beginning.</p>
+</div>
+<div id="relationship-between-primary-school-enrollment-and-fertility-rate" class="section level2">
+<h2>Relationship between primary school enrollment and fertility rate</h2>
+<pre class="r"><code>#Plotting
+ggplot(data = three_combined, aes(x = SE.PRM.NENR, y= SP.DYN.TFRT.IN)) + geom_point(alpha=0.4) + geom_smooth(method = lm) + labs(title=&quot;Better living standard and healthcare access leads to less children&quot;,subtitle=&quot;Primary school enrollment and fertility rate&quot;,x=&quot;Primary school enrollment&quot;,y=&quot;Fertility rate&quot;) + theme_classic() + facet_wrap(~region, scales=&quot;free&quot;)</code></pre>
+<p><img src="/blogs/project_GDP/blog12_files/figure-html/unnamed-chunk-7-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#cleaning data before calculating correlation coefficient
+correlation_primary_fertility &lt;- three_combined %&gt;%
+  filter (!is.na(SE.PRM.NENR &amp; SP.DYN.TFRT.IN)) %&gt;%
+  select(SE.PRM.NENR, SP.DYN.TFRT.IN) %&gt;% 
+  cor()
+
+correlation_primary_fertility</code></pre>
+<pre><code>##                SE.PRM.NENR SP.DYN.TFRT.IN
+## SE.PRM.NENR          1.000         -0.716
+## SP.DYN.TFRT.IN      -0.716          1.000</code></pre>
+<blockquote>
+<p>Considering the correlation coefficient of -0.716, there seems to be a clear negative correlation between these two variables. This reflects the general opinion that besides a higher GDP especially education has a very strong impact on the fertility rate. Usually better education leads to less children in a society. This is perfectly visualized in the Sub-Saharan Africa graph or the South Asia graph.</p>
+</blockquote>
+</div>
+</div>

@@ -136,7 +136,7 @@ disqusShortname = ""
   [params.two]
     enable = true
     title = "Massa libero"
-    subtitle = """My nam is Kasia and I come from Poland"""
+    subtitle = """My nam is Kasia and I come from Poland! I came to the UK 5 years ago to pursue my Bachelor degree"""
     buttonText = "Get Started"
     url = "blogs"
 

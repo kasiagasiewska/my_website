@@ -11,6 +11,8 @@ slug: climate
 title: Climate
 ---
 
+
+
 ```{r, setup, include=FALSE}
 knitr::opts_chunk$set(
   message = FALSE, 

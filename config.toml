@@ -114,7 +114,7 @@ disqusShortname = ""
 
     [[params.tiles.showcase]]
       title = "Politics & Society"
-      subtitle = "Estimating approval rates for Donald Trump"
+      subtitle = "Estimating approval rates for Donald Trump and money raising during elections"
       image = "pic03.jpg"
       url = "blogs/project_trump"
 

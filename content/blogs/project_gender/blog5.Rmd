@@ -77,9 +77,10 @@ select(gender_dataframe2,-min, -Q1, -median, -Q3, -max, -missing)
 ```
 
 ## Comment
-We can conclude that based on the dataset above, there is a significant difference between the salaries paid to men and women. We can be 95% certain of this because, at this significance level, the two different confidence intervals do not overlap. Therefore it is very unlikely that the difference in salary averages paid to men and women occured by coincidence.
 
-Next, we will conduct a hypothesis test to assess whether our null hypothesis, that salary averages of men and women are not significantly different, is accepted or rejected.
+> We can conclude that based on the dataset above, there is a significant difference between the salaries paid to men and women. We can be 95% certain of this because, at this significance level, the two different confidence intervals do not overlap. Therefore it is very unlikely that the difference in salary averages paid to men and women occured by coincidence.
+
+> Next, we will conduct a hypothesis test to assess whether our null hypothesis, that salary averages of men and women are not significantly different, is accepted or rejected.
 
 ```{r, hypothesis_testing}
 # hypothesis testing using t.test() 

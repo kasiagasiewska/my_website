@@ -15,6 +15,7 @@ title: Climate Change
 
 <div id="climate-change-and-temperature-anomalies" class="section level1">
 <h1>Climate change and temperature anomalies</h1>
+<p>Lets first load the data and select the relevant variables</p>
 <pre class="r"><code># Loading the file
 
 weather &lt;- 
@@ -40,6 +41,9 @@ glimpse(tidyweather)</code></pre>
 ## $ delta &lt;dbl&gt; -0.54, -0.38, -0.26, -0.37, -0.11, -0.22, -0.23, -0.24, -0.26, …</code></pre>
 <div id="plotting-information" class="section level2">
 <h2>Plotting Information</h2>
+<div id="delta-plot-over-time" class="section level3">
+<h3>Delta plot over time</h3>
+<p>In order to plot the data we will first clean it. We want to see how the temperature changes (delta) throughout the last century</p>
 <pre class="r"><code>#Preparing the dataset for plotting
 
 tidyweather_new &lt;- tidyweather %&gt;%
@@ -54,19 +58,27 @@ tidyweather_new &lt;- tidyweather %&gt;%
                   y = delta))+
   geom_point()+
   geom_smooth(color=&quot;red&quot;) +
-  theme_clean() +
+  theme_economist() +
   labs (
     title = &quot;Weather Anomalies&quot;
   )
 
 p1</code></pre>
 <p><img src="/blogs/project_climate/blog4_files/figure-html/scatter_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="delta-plots-grouped-by-month" class="section level3">
+<h3>Delta plots grouped by month</h3>
+<p>Lets divide the graphs into months to better understand the trends</p>
 <pre class="r"><code># Applying a facet wrap to the plot
 
 p2 &lt;- p1 + facet_wrap(~month)
 
 p2</code></pre>
 <p><img src="/blogs/project_climate/blog4_files/figure-html/facet_wrap-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="density-plot-of-delta" class="section level3">
+<h3>Density plot of delta</h3>
+<p>Now we would like to see how does our delta change using 30 and 40 year intervals</p>
 <pre class="r"><code># Filtering the dataset
 
 comparison &lt;- tidyweather %&gt;% 
@@ -85,12 +97,16 @@ comparison &lt;- tidyweather %&gt;%
 
 ggplot(comparison, aes(x=delta, fill=interval))+
   geom_density(alpha=0.2) +   
-  theme_bw() +              
+  theme_economist() +              
   labs (
     title = &quot;Density Plot for Monthly Temperature Anomalies&quot;,
     y     = &quot;Density&quot;     
   )</code></pre>
 <p><img src="/blogs/project_climate/blog4_files/figure-html/density_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>It seems like delts increases with time significantly!</p>
+</div>
+<div id="yearly-averages-plot" class="section level3">
+<h3>Yearly averages plot</h3>
 <pre class="r"><code># Creating yearly averages
 
 average_annual_anomaly &lt;- tidyweather %&gt;% 
@@ -122,12 +138,13 @@ ggplot(average_annual_anomaly,
            y = annual_average_delta))+
   geom_point()+
   geom_smooth(method = &quot;loess&quot;) +
-  theme_bw() +
+  theme_economist() +
   labs (
     title = &quot;Average Yearly Anomaly&quot;,
     y     = &quot;Average Annual Delta&quot;
   )                         </code></pre>
 <p><img src="/blogs/project_climate/blog4_files/figure-html/averaging1-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
 </div>
 <div id="confidence-interval-for-delta" class="section level2">
 <h2>Confidence Interval for <code>delta</code></h2>

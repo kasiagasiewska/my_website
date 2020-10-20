@@ -44,6 +44,8 @@ library(vroom)
 
 # Climate change and temperature anomalies 
 
+Lets first load the data and select the relevant variables
+
 ```{r weather_data, cache=TRUE}
 # Loading the file
 
@@ -72,6 +74,10 @@ glimpse(tidyweather)
 
 ## Plotting Information
 
+### Delta plot over time
+
+In order to plot the data we will first clean it. We want to see how the temperature changes (delta) throughout the last century
+
 ```{r scatter_plot}
 #Preparing the dataset for plotting
 
@@ -87,13 +93,17 @@ tidyweather_new <- tidyweather %>%
                   y = delta))+
   geom_point()+
   geom_smooth(color="red") +
-  theme_clean() +
+  theme_economist() +
   labs (
     title = "Weather Anomalies"
   )
 
 p1
 ```
+
+### Delta plots grouped by month
+
+Lets divide the graphs into months to better understand the trends
 
 ```{r facet_wrap}
 # Applying a facet wrap to the plot
@@ -103,6 +113,10 @@ p2 <- p1 + facet_wrap(~month)
 p2
 
 ```
+
+### Density plot of delta
+
+Now we would like to see how does our delta change using 30 and 40 year intervals
 
 ```{r intervals}
 # Filtering the dataset
@@ -127,13 +141,18 @@ comparison <- tidyweather %>%
 
 ggplot(comparison, aes(x=delta, fill=interval))+
   geom_density(alpha=0.2) +   
-  theme_bw() +              
+  theme_economist() +              
   labs (
     title = "Density Plot for Monthly Temperature Anomalies",
     y     = "Density"     
   )
 
 ```
+
+It seems like delts increases with time significantly!
+
+### Yearly averages plot
+
 ```{r averaging}
 # Creating yearly averages
 
@@ -155,7 +174,7 @@ ggplot(average_annual_anomaly,
            y = annual_average_delta))+
   geom_point()+
   geom_smooth(method = "loess") +
-  theme_bw() +
+  theme_economist() +
   labs (
     title = "Average Yearly Anomaly",
     y     = "Average Annual Delta"

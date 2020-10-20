@@ -44,6 +44,8 @@ library(vroom)
 
 # CDC COVID-19 Public Use Data
 
+Let us look at the file first
+
 ```{r, cache=TRUE}
 # file contains 11 variables and 3.66m rows and is well over 380Mb. 
 # It will take time to download
@@ -57,8 +59,9 @@ covid_data <- vroom::vroom(url)%>% # If vroom::vroom(url) doesn't work, use read
 
 ```
 
-
 ## Covid death % by age group, sex and presence of co-morbidities
+
+Lets clean the data first and then plot it
 
 ```{r, cache=TRUE}
 
@@ -98,12 +101,27 @@ labels = c("With comorbidities", "Without comorbidities"))
 #glimpse(covid_deaths)
 
 #Graphical reflection
-ggplot(data = covid_deaths, aes(x = age_group, y = death_percentage)) + geom_col(fill = "#6b7ca4", show.legend = FALSE) +  geom_text(aes(label = round(death_percentage*100, 1), hjust = 0.6)) + labs(title = "Covid death % by age group, sex and presence of co-morbidities", caption = "Source:CDC") + theme_bw() + theme(axis.title.x = element_blank(), axis.title.y = element_blank()) + scale_y_continuous(labels = scales::percent) + coord_flip() + facet_grid(medcond_yn_names ~ sex)
+ggplot(data = covid_deaths, aes(x = age_group, 
+                                y = death_percentage)) + 
+  geom_col(fill = "#6b7ca4", 
+           show.legend = FALSE) +  
+  geom_text(aes(label = round(death_percentage*100, 1), 
+                hjust = 0.6)) + 
+  labs(title = "Covid death % by age group, sex and presence of co-morbidities", 
+       caption = "Source:CDC") + 
+  theme_bw() + 
+  theme(axis.title.x = element_blank(), 
+        axis.title.y = element_blank()) + 
+  scale_y_continuous(labels = scales::percent) + 
+  coord_flip() + 
+  facet_grid(medcond_yn_names ~ sex)
 
 
 ```
 
 ## Covid death rate by age group, sex and whether patient was admitted to ICU
+
+Here we will also start with cleaning the data and later plot it
 
 ```{r, cache=TRUE}
 
@@ -142,11 +160,20 @@ labels = c("Admitted to ICU", "No ICU"))
 #glimpse(icu_covid)
 
 #Graphical reflection
-ggplot(data = icu_covid, aes(x = age_group, y = death_percentage)) + geom_col(fill = "#fe9481", show.legend = FALSE) + geom_text(aes(label = round(death_percentage*100, 1), hjust = 0.6)) + labs(title = "Covid death % by age group, sex and whether patient was admitted to ICU", caption = "Source:CDC") + theme_bw() + theme(axis.title.x = element_blank(), axis.title.y = element_blank()) + scale_y_continuous(labels = scales::percent) + coord_flip() + facet_grid(icu_yn_names ~ sex)
+ggplot(data = icu_covid, aes(x = age_group,
+                             y = death_percentage)) + 
+  geom_col(fill = "#fe9481", 
+           show.legend = FALSE) + 
+  geom_text(aes(label = round(death_percentage*100, 1), 
+                hjust = 0.6)) + 
+  labs(title = "Covid death % by age group, sex and whether patient was admitted to ICU", caption = "Source:CDC") + 
+  theme_bw() + 
+  theme(axis.title.x = element_blank(), 
+        axis.title.y = element_blank()) + 
+  scale_y_continuous(labels = scales::percent) + 
+  coord_flip() + 
+  facet_grid(icu_yn_names ~ sex)
 ```
+## Comment
 
-```{r covid_challenge, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "covid_death_rate_comorbidities.png"), error = FALSE)
-knitr::include_graphics(here::here("images", "covid_death_rate_icu.png"), error = FALSE)
-```
-
+> It seems that unsurprisingly age plays a big role when it come to COVID death, the older the person is the more risk he is under. Another factor seems to be gender as it appears that a higher percentage of men die from COVID than women in a similar condition. Co-morbidities and ICU admission also increase the risk significantly.

@@ -15,6 +15,7 @@ title: COVID Mortality Rate
 
 <div id="cdc-covid-19-public-use-data" class="section level1">
 <h1>CDC COVID-19 Public Use Data</h1>
+<p>Let us look at the file first</p>
 <pre class="r"><code># file contains 11 variables and 3.66m rows and is well over 380Mb. 
 # It will take time to download
 
@@ -25,6 +26,7 @@ covid_data &lt;- vroom::vroom(url)%&gt;% # If vroom::vroom(url) doesn&#39;t work
   clean_names()</code></pre>
 <div id="covid-death-by-age-group-sex-and-presence-of-co-morbidities" class="section level2">
 <h2>Covid death % by age group, sex and presence of co-morbidities</h2>
+<p>Lets clean the data first and then plot it</p>
 <pre class="r"><code>#glimpse(covid_data)
 #Data cleaning
 
@@ -57,11 +59,25 @@ labels = c(&quot;With comorbidities&quot;, &quot;Without comorbidities&quot;))
 #glimpse(covid_deaths)
 
 #Graphical reflection
-ggplot(data = covid_deaths, aes(x = age_group, y = death_percentage)) + geom_col(fill = &quot;#6b7ca4&quot;, show.legend = FALSE) +  geom_text(aes(label = round(death_percentage*100, 1), hjust = 0.6)) + labs(title = &quot;Covid death % by age group, sex and presence of co-morbidities&quot;, caption = &quot;Source:CDC&quot;) + theme_bw() + theme(axis.title.x = element_blank(), axis.title.y = element_blank()) + scale_y_continuous(labels = scales::percent) + coord_flip() + facet_grid(medcond_yn_names ~ sex)</code></pre>
+ggplot(data = covid_deaths, aes(x = age_group, 
+                                y = death_percentage)) + 
+  geom_col(fill = &quot;#6b7ca4&quot;, 
+           show.legend = FALSE) +  
+  geom_text(aes(label = round(death_percentage*100, 1), 
+                hjust = 0.6)) + 
+  labs(title = &quot;Covid death % by age group, sex and presence of co-morbidities&quot;, 
+       caption = &quot;Source:CDC&quot;) + 
+  theme_bw() + 
+  theme(axis.title.x = element_blank(), 
+        axis.title.y = element_blank()) + 
+  scale_y_continuous(labels = scales::percent) + 
+  coord_flip() + 
+  facet_grid(medcond_yn_names ~ sex)</code></pre>
 <p><img src="/blogs/project_climate/blog8_files/figure-html/unnamed-chunk-3-1.png" width="648" style="display: block; margin: auto;" /></p>
 </div>
 <div id="covid-death-rate-by-age-group-sex-and-whether-patient-was-admitted-to-icu" class="section level2">
 <h2>Covid death rate by age group, sex and whether patient was admitted to ICU</h2>
+<p>Here we will also start with cleaning the data and later plot it</p>
 <pre class="r"><code>#glimpse(covid_data)
 #Data cleaning
 
@@ -94,8 +110,23 @@ labels = c(&quot;Admitted to ICU&quot;, &quot;No ICU&quot;))
 #glimpse(icu_covid)
 
 #Graphical reflection
-ggplot(data = icu_covid, aes(x = age_group, y = death_percentage)) + geom_col(fill = &quot;#fe9481&quot;, show.legend = FALSE) + geom_text(aes(label = round(death_percentage*100, 1), hjust = 0.6)) + labs(title = &quot;Covid death % by age group, sex and whether patient was admitted to ICU&quot;, caption = &quot;Source:CDC&quot;) + theme_bw() + theme(axis.title.x = element_blank(), axis.title.y = element_blank()) + scale_y_continuous(labels = scales::percent) + coord_flip() + facet_grid(icu_yn_names ~ sex)</code></pre>
-<p><img src="/blogs/project_climate/blog8_files/figure-html/unnamed-chunk-5-1.png" width="648" style="display: block; margin: auto;" /></p>
-<p><img src="/Users/kasia/Desktop/LBS/Data Analytics/my_website/images/covid_death_rate_comorbidities.png" width="100%" style="display: block; margin: auto;" /><img src="/Users/kasia/Desktop/LBS/Data Analytics/my_website/images/covid_death_rate_icu.png" width="100%" style="display: block; margin: auto;" /></p>
+ggplot(data = icu_covid, aes(x = age_group,
+                             y = death_percentage)) + 
+  geom_col(fill = &quot;#fe9481&quot;, 
+           show.legend = FALSE) + 
+  geom_text(aes(label = round(death_percentage*100, 1), 
+                hjust = 0.6)) + 
+  labs(title = &quot;Covid death % by age group, sex and whether patient was admitted to ICU&quot;, caption = &quot;Source:CDC&quot;) + 
+  theme_bw() + 
+  theme(axis.title.x = element_blank(), 
+        axis.title.y = element_blank()) + 
+  scale_y_continuous(labels = scales::percent) + 
+  coord_flip() + 
+  facet_grid(icu_yn_names ~ sex)</code></pre>
+<p><img src="/blogs/project_climate/blog8_files/figure-html/unnamed-chunk-5-1.png" width="648" style="display: block; margin: auto;" />
+## Comment</p>
+<blockquote>
+<p>It seems that unsurprisingly age plays a big role when it come to COVID death, the older the person is the more risk he is under. Another factor seems to be gender as it appears that a higher percentage of men die from COVID than women in a similar condition. Co-morbidities and ICU admission also increase the risk significantly.</p>
+</blockquote>
 </div>
 </div>

@@ -42,8 +42,9 @@ library(readxl)
 library(vroom)
 ```
 
-
 # Trump's Approval Margins
+
+Let us first load the data and clean it
 
 ```{r, cache=TRUE}
 # Import approval polls data
@@ -63,6 +64,8 @@ approval_polllist$createddate <- mdy(approval_polllist$createddate)
 ```
 
 ## Create a plot
+
+Now lets lot the net approval for Donald Trump in the last 4 years
 
 ```{r, cache=TRUE}
 #Adding net approval

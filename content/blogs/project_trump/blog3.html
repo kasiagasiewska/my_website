@@ -15,6 +15,7 @@ title: Trump Approval Rate
 
 <div id="trumps-approval-margins" class="section level1">
 <h1>Trump’s Approval Margins</h1>
+<p>Let us first load the data and clean it</p>
 <pre class="r"><code># Import approval polls data
 approval_polllist &lt;- read_csv(here::here(&#39;data&#39;, &#39;approval_polllist.csv&#39;))
 
@@ -53,6 +54,7 @@ approval_polllist$enddate &lt;- mdy(approval_polllist$enddate)
 approval_polllist$createddate &lt;- mdy(approval_polllist$createddate)</code></pre>
 <div id="create-a-plot" class="section level2">
 <h2>Create a plot</h2>
+<p>Now lets lot the net approval for Donald Trump in the last 4 years</p>
 <pre class="r"><code>#Adding net approval
 president_approval &lt;- approval_polllist %&gt;%
   mutate(net_approval = adjusted_approve - adjusted_disapprove)

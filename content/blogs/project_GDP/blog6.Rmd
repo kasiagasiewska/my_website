@@ -45,9 +45,9 @@ library(openintro)
 library(tidyquant)
 ```
 
-# Challenge 2:GDP components over time and among countries
+# GDP components over time and among countries
 
-# Components of GDP in Germany, India and United States
+## Components of GDP in Germany, India and United States
 
 ```{r read_GDP_data}
 
@@ -57,7 +57,7 @@ UN_GDP_data  <-  read_excel(here::here("data", "Download-GDPconstant-USD-countri
 
 ```
 
-> The first thing you need to do is to tidy the data, as it is in wide format and you must make it into long, tidy format. Please express all figures in billions (divide values by `1e9`, or $10^9$), and you want to rename the indicators into something shorter.
+The first thing you need to do is to tidy the data, as it is in wide format and you must make it into long, tidy format. Please express all figures in billions (divide values by `1e9`, or $10^9$), and you want to rename the indicators into something shorter.
 
 ```{r reshape_GDP_data}
 #making the data into the long format, transforming GDP data into billions and renaming components
@@ -81,6 +81,8 @@ country_list <- c("United States","India", "Germany")
 indicator_list = c("Gross_capital_formation", "Exports", "Government_expenditure", "Household_expenditure", "Imports")
 
 ```
+
+Now lets filter the data for US, India and Germany and plot it to see trends in specific components over time in those 3 countries
 
 ```{r GDP_graphs, fig.width = 10}
 #filtering out the data for chosen countries and GDP components
@@ -110,6 +112,8 @@ ggplot(data_selected, aes(x = year, y = GDP, group = IndicatorName, color = Indi
 
 ## Calculation of GDP differences
 
+Lets see what is the difference between given GDP and implied GDP number
+
 ```{r}
 #Calculating difference between given and implied GDP
 GDP_calc <- data_selected %>%
@@ -137,6 +141,8 @@ glimpse(GDP_avg_diff)
 The % difference between the GDP figure included in the dataframe and the GDP calculated from the components is on average 0.87%
 
 ## Proportion of GDP components
+
+Now we want to look at components more closely to see what is the breakdown of GDP in our 3 countries
 
 ```{r GDP_graphs2, fig.width = 10}
 #Calculating proportion of each component in the total GDP value
@@ -171,6 +177,8 @@ ggplot(GDP_proportion, aes(x = year, y = Proportion, group = GDP_Component, colo
         axis.title.x = element_blank(),
         plot.caption = element_text(hjust = 1,size = 8))
 ```
+
+## Comment of the findings
 
 > Germany is a mature economy and we do not observe significant movements in their GDP components. One exception could possibly be Net Exports which has increased sharply around the 2000s which coincides with Euro adoption allowing Germany to trade more easily. 
 

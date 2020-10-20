@@ -13,17 +13,14 @@ title: GDP Analysis
 
 
 
-<div id="challenge-2gdp-components-over-time-and-among-countries" class="section level1">
-<h1>Challenge 2:GDP components over time and among countries</h1>
-</div>
-<div id="components-of-gdp-in-germany-india-and-united-states" class="section level1">
-<h1>Components of GDP in Germany, India and United States</h1>
+<div id="gdp-components-over-time-and-among-countries" class="section level1">
+<h1>GDP components over time and among countries</h1>
+<div id="components-of-gdp-in-germany-india-and-united-states" class="section level2">
+<h2>Components of GDP in Germany, India and United States</h2>
 <pre class="r"><code>UN_GDP_data  &lt;-  read_excel(here::here(&quot;data&quot;, &quot;Download-GDPconstant-USD-countries.xls&quot;), # Excel filename
                 sheet=&quot;Download-GDPconstant-USD-countr&quot;, # Sheet name
                 skip=2) # Number of rows to skip</code></pre>
-<blockquote>
 <p>The first thing you need to do is to tidy the data, as it is in wide format and you must make it into long, tidy format. Please express all figures in billions (divide values by <code>1e9</code>, or <span class="math inline">\(10^9\)</span>), and you want to rename the indicators into something shorter.</p>
-</blockquote>
 <pre class="r"><code>#making the data into the long format, transforming GDP data into billions and renaming components
 tidy_GDP_data  &lt;-  UN_GDP_data %&gt;% 
     pivot_longer(cols = 4:51,
@@ -43,6 +40,7 @@ tidy_GDP_data  &lt;-  UN_GDP_data %&gt;%
 # Selecting GDP components for 3 countries
 country_list &lt;- c(&quot;United States&quot;,&quot;India&quot;, &quot;Germany&quot;)
 indicator_list = c(&quot;Gross_capital_formation&quot;, &quot;Exports&quot;, &quot;Government_expenditure&quot;, &quot;Household_expenditure&quot;, &quot;Imports&quot;)</code></pre>
+<p>Now lets filter the data for US, India and Germany and plot it to see trends in specific components over time in those 3 countries</p>
 <pre class="r"><code>#filtering out the data for chosen countries and GDP components
 data_selected &lt;- tidy_GDP_data %&gt;% 
   filter(Country %in% country_list &amp; IndicatorName %in% indicator_list)
@@ -67,8 +65,10 @@ ggplot(data_selected, aes(x = year, y = GDP, group = IndicatorName, color = Indi
         legend.key = element_rect(colour = &quot;transparent&quot;, fill = &quot;transparent&quot;),
         axis.title.x = element_blank())</code></pre>
 <p><img src="/blogs/project_GDP/blog6_files/figure-html/GDP_graphs-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
 <div id="calculation-of-gdp-differences" class="section level2">
 <h2>Calculation of GDP differences</h2>
+<p>Lets see what is the difference between given GDP and implied GDP number</p>
 <pre class="r"><code>#Calculating difference between given and implied GDP
 GDP_calc &lt;- data_selected %&gt;%
   pivot_wider(names_from = IndicatorName, values_from = GDP) %&gt;% 
@@ -96,6 +96,7 @@ glimpse(GDP_avg_diff)</code></pre>
 </div>
 <div id="proportion-of-gdp-components" class="section level2">
 <h2>Proportion of GDP components</h2>
+<p>Now we want to look at components more closely to see what is the breakdown of GDP in our 3 countries</p>
 <pre class="r"><code>#Calculating proportion of each component in the total GDP value
 GDP_proportion &lt;- data_selected %&gt;%
   pivot_wider(names_from = IndicatorName, values_from = GDP) %&gt;%
@@ -128,6 +129,9 @@ ggplot(GDP_proportion, aes(x = year, y = Proportion, group = GDP_Component, colo
         axis.title.x = element_blank(),
         plot.caption = element_text(hjust = 1,size = 8))</code></pre>
 <p><img src="/blogs/project_GDP/blog6_files/figure-html/GDP_graphs2-1.png" width="960" style="display: block; margin: auto;" /></p>
+</div>
+<div id="comment-of-the-findings" class="section level2">
+<h2>Comment of the findings</h2>
 <blockquote>
 <p>Germany is a mature economy and we do not observe significant movements in their GDP components. One exception could possibly be Net Exports which has increased sharply around the 2000s which coincides with Euro adoption allowing Germany to trade more easily.</p>
 </blockquote>

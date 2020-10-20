@@ -47,6 +47,10 @@ library(tidyquant)
 
 # Yield Curve inversion
 
+## Preparing the data
+
+Here we would like to investigate what is the relationship between yield curve inversion and recessions.
+
 First, we use the `tidyquant` package to download monthly rates for different durations. 
 
 ```{r get_rates, warning=FALSE}
@@ -110,9 +114,7 @@ glimpse(yield_curve)
 
 ## Yields on US rates by duration since 1960
 
-```{r yield_curve_1, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "yield_curve1.png"), error = FALSE)
-```
+Let us now look at yields of Treasuries by duration
 
 ```{r yield_curve_1_replication, fig.width = 15, fig.height=12}
 
@@ -127,17 +129,15 @@ ggplot(data = yield_curve,
   facet_wrap(~var, nrow = 5) + 
   theme_bw() + 
 #Adding labels to the graph
-  labs(title = "Yields on U.S. Treasury rates since 1960", x = "", y = "%", caption = "Source:St. Louis Federal Reserve Economic Database (FRED)") 
+  labs(title = "Yields on U.S. Treasury rates since 1960", x = "", y = "%", caption = "Source:St. Louis Federal Reserve Economic Database (FRED)")  + 
+  theme_economist()
 
   
 ```
 
 ## Monthly yields on US rates by duration since 1999 on a year-by-year basis
 
-
-```{r yield_curve_2, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "yield_curve2.png"), error = FALSE)
-```
+Here let us look at yield curves grouped by year (including great colours!)
 
 ```{r yield_curve_2_replication, fig.width = 15, fig.height=12}
 
@@ -161,17 +161,14 @@ ggplot(yield_curve_two,
   labs(title = "US Yield Curve", 
        x = "Maturity", 
        y = "Yield(%)", 
-       caption = "Source:St. Louis Federal Reserve Economic Database (FRED)") 
-
+       caption = "Source:St. Louis Federal Reserve Economic Database (FRED)")   + theme_economist()
 
   
 ```
 
 ## 3-month and 10-year yields since 1999
 
-```{r yield_curve_3, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "yield_curve3.png"), error = FALSE)
-```
+Last but not least let us compare 3-month and 10-year Treasury yields
 
 ```{r yield_curve_3_replication, fig.width = 15, fig.height=12}
 
@@ -198,7 +195,7 @@ ggplot(yield_curve_legend,
   labs(title = "Yields on 3-month and 10-year Treasury rates since 1999", 
        x = "", 
        y = "%", 
-       caption = "Source:St. Louis Federal Reserve Economic Database (FRED)") 
+       caption = "Source:St. Louis Federal Reserve Economic Database (FRED)")  + theme_economist()
 
   
 ```
@@ -208,7 +205,7 @@ ggplot(yield_curve_legend,
 Besides calculating the spread (10year - 3months), there are a few things we need to do to produce our final plot
 
 1. Setup data for US recessions 
-1. Superimpose recessions as the grey areas in our plot
+1. Superimpose recessions as the darker areas in our plot
 1. Plot the spread between 30 years and 3 months as a blue/red ribbon, based on whether the spread is positive (blue) or negative(red)
 
 
@@ -271,7 +268,8 @@ ggplot(yield_curve_wide,
        x = "", 
        caption = "Source:St. Louis Federal Reserve Economic Database (FRED)") +
 #Adapting scale
-  scale_x_date(date_breaks="2 years",date_labels="%Y")
+  scale_x_date(date_breaks="2 years",date_labels="%Y") + 
+  theme_economist()
   
   
 

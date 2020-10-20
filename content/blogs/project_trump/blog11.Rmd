@@ -12,7 +12,7 @@ title: US Elections 2016
 ---
 
 
-```{r, setup}
+```{r, setup, echo=FALSE}
 knitr::opts_chunk$set(
   message = FALSE, 
   warning = FALSE, 
@@ -45,10 +45,12 @@ library(tidyquant)
 
 # 2016 California Contributors plots
 
+Lets see who donates for the presidential candidates in the blue California! We are expecting Hilary Clinton will secure significantly more funds there.
+
 ## Plotting total donations by Californian cities for 2016 presidential candidates
 
 ```{r, load_CA_data, warnings= FALSE, message=FALSE}
-# Make sure you use vroom() as it is significantly faster than read.csv()
+# loading the data
 CA_contributors_2016 <- vroom::vroom(here::here("data","CA_contributors_2016.csv"))
 zip_codes <- vroom::vroom(here::here("data","zip_code_database.csv"))
 

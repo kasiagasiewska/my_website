@@ -13,24 +13,12 @@ title: US Elections 2016
 
 
 
-<pre class="r"><code>knitr::opts_chunk$set(
-  message = FALSE, 
-  warning = FALSE, 
-  tidy=FALSE,     # display code as typed
-  size=&quot;small&quot;)   # slightly smaller font for code
-options(digits = 3)
-
-# default figure size
-knitr::opts_chunk$set(
-  fig.width=6.75, 
-  fig.height=6.75,
-  fig.align = &quot;center&quot;
-)</code></pre>
 <div id="california-contributors-plots" class="section level1">
 <h1>2016 California Contributors plots</h1>
+<p>Lets see who donates for the presidential candidates in the blue California! We are expecting Hilary Clinton will secure significantly more funds there.</p>
 <div id="plotting-total-donations-by-californian-cities-for-2016-presidential-candidates" class="section level2">
 <h2>Plotting total donations by Californian cities for 2016 presidential candidates</h2>
-<pre class="r"><code># Make sure you use vroom() as it is significantly faster than read.csv()
+<pre class="r"><code># loading the data
 CA_contributors_2016 &lt;- vroom::vroom(here::here(&quot;data&quot;,&quot;CA_contributors_2016.csv&quot;))
 zip_codes &lt;- vroom::vroom(here::here(&quot;data&quot;,&quot;zip_code_database.csv&quot;))
 

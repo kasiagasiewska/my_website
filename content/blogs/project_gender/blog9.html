@@ -17,11 +17,14 @@ title: Social Media
 <h1>General Social Survey (GSS)</h1>
 <p>The <a href="http://www.gss.norc.org/">General Social Survey (GSS)</a> gathers data on American society in order to monitor and explain trends in attitudes, behaviours, and attributes. Many trends have been tracked for decades, so one can see the evolution of attitudes, etc in American Society.</p>
 <p>In this assignment we analyse data from the <strong>2016 GSS sample data</strong>, using it to estimate values of <em>population parameters</em> of interest about US adults.</p>
-<p>Please find below variables we will be testing
-* hours and minutes spent on email weekly. The responses to these questions are recorded in the <code>emailhr</code> and <code>emailmin</code> variables.
-* <code>snapchat</code>, <code>instagrm</code>, <code>twitter</code>: whether respondents used these social media in 2016
-* <code>sex</code>: Female - Male
-* <code>degree</code>: highest education level attained</p>
+<p>Please find below variables we will be testing:</p>
+<ul>
+<li><p>hours and minutes spent on email weekly. The responses to these questions are recorded in the <code>emailhr</code> and <code>emailmin</code> variables.</p></li>
+<li><p><code>snapchat</code>, <code>instagrm</code>, <code>twitter</code>: whether respondents used these social media in 2016</p></li>
+<li><p><code>sex</code>: Female - Male</p></li>
+<li><p><code>degree</code>: highest education level attained</p></li>
+</ul>
+<p>Lets look at the data first</p>
 <pre class="r"><code>gss &lt;- read_csv(here::here(&quot;data&quot;, &quot;smallgss2016.csv&quot;), 
                 na = c(&quot;&quot;, &quot;Don&#39;t know&quot;,
                        &quot;No answer&quot;, &quot;Not applicable&quot;))
@@ -163,6 +166,7 @@ glimpse(gss)</code></pre>
 </table>
 <div id="instagram-and-snapchat-by-sex" class="section level2">
 <h2>Instagram and Snapchat, by sex</h2>
+<p>Who uses Instagram and Snapchat more - men or women?</p>
 <pre class="r"><code>#Creating new variables
 social_usage &lt;- gss %&gt;%
   mutate(snap_insta = case_when(snapchat == &quot;Yes&quot; &amp; instagrm == &quot;Yes&quot; ~ &quot;Yes&quot;, snapchat == &quot;Yes&quot; | instagrm == &quot;Yes&quot; ~ &quot;Yes&quot;, snapchat == &quot;No&quot; &amp; instagrm == &quot;No&quot; ~ &quot;No&quot;, snapchat == &quot;NA&quot; &amp; instagrm == &quot;NA&quot; ~ &quot;NA&quot; ))
@@ -229,6 +233,7 @@ ci_gender1</code></pre>
 </div>
 <div id="twitter-by-education-level" class="section level2">
 <h2>Twitter, by education level</h2>
+<p>Is Twitter usage related to education level?</p>
 <pre class="r"><code>#Turning to Factor variable and non alphabetical
 twitter_users &lt;- gss %&gt;%
   group_by(degree) %&gt;%
@@ -310,6 +315,7 @@ twitter_CI_summary</code></pre>
 </div>
 <div id="email-usage" class="section level2">
 <h2>Email usage</h2>
+<p>How much time do we spend on our emails during the week?</p>
 <pre class="r"><code>#Creating new variable
 email_usage &lt;- gss
 

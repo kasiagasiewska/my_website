@@ -158,7 +158,7 @@ ggplot(data = yield_curve,
   theme_bw() + 
 #Adding labels to the graph
   labs(title = &quot;Yields on U.S. Treasury rates since 1960&quot;, x = &quot;&quot;, y = &quot;%&quot;, caption = &quot;Source:St. Louis Federal Reserve Economic Database (FRED)&quot;)  + 
-  theme_economist()</code></pre>
+  theme_economist_white()</code></pre>
 <p><img src="/blogs/project_finance/blog10_files/figure-html/yield_curve_1_replication-1.png" width="1440" style="display: block; margin: auto;" /></p>
 </div>
 <div id="monthly-yields-on-us-rates-by-duration-since-1999-on-a-year-by-year-basis" class="section level2">
@@ -184,7 +184,7 @@ ggplot(yield_curve_two,
   labs(title = &quot;US Yield Curve&quot;, 
        x = &quot;Maturity&quot;, 
        y = &quot;Yield(%)&quot;, 
-       caption = &quot;Source:St. Louis Federal Reserve Economic Database (FRED)&quot;)   + theme_economist()</code></pre>
+       caption = &quot;Source:St. Louis Federal Reserve Economic Database (FRED)&quot;)   + theme_economist_white()</code></pre>
 <p><img src="/blogs/project_finance/blog10_files/figure-html/yield_curve_2_replication-1.png" width="1440" style="display: block; margin: auto;" /></p>
 </div>
 <div id="month-and-10-year-yields-since-1999" class="section level2">
@@ -213,7 +213,7 @@ ggplot(yield_curve_legend,
   labs(title = &quot;Yields on 3-month and 10-year Treasury rates since 1999&quot;, 
        x = &quot;&quot;, 
        y = &quot;%&quot;, 
-       caption = &quot;Source:St. Louis Federal Reserve Economic Database (FRED)&quot;)  + theme_economist()</code></pre>
+       caption = &quot;Source:St. Louis Federal Reserve Economic Database (FRED)&quot;)  + theme_economist_white()</code></pre>
 <p><img src="/blogs/project_finance/blog10_files/figure-html/yield_curve_3_replication-1.png" width="1440" style="display: block; margin: auto;" /></p>
 </div>
 <div id="forecasting-recessions-in-the-us-with-a-yield-curve" class="section level2">
@@ -275,7 +275,7 @@ ggplot(yield_curve_wide,
        caption = &quot;Source:St. Louis Federal Reserve Economic Database (FRED)&quot;) +
 #Adapting scale
   scale_x_date(date_breaks=&quot;2 years&quot;,date_labels=&quot;%Y&quot;) + 
-  theme_economist()</code></pre>
+  theme_economist_white()</code></pre>
 <p><img src="/blogs/project_finance/blog10_files/figure-html/yield_curve_4-1.png" width="1440" style="display: block; margin: auto;" /></p>
 <blockquote>
 <p>Looking at our graph, we can clearly detect a correlation between yield difference curve movement and recessions. Several times directly before a recession the short term yield exceeds the long term yield and thus a negative yield difference exists. This pattern also applies to the two recessions in the US since 1999 according to Wikipedia. Alltogether, since 1999, a negative yield difference has been recorded three times - the above mentioned recessions and once more in 2020. The 2020 negative yield difference is directly before the covid-19 recession, however, the recession data frame does not yet include this recession. So overall, a negative difference seems to be a rather reliable predictor, although not always accurate according to the graph.</p>

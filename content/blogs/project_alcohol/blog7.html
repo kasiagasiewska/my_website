@@ -13,23 +13,13 @@ title: Movies Analysis
 
 
 
-<pre class="r"><code>knitr::opts_chunk$set(
-  message = FALSE, 
-  warning = FALSE, 
-  tidy=FALSE,     # display code as typed
-  size=&quot;small&quot;)   # slightly smaller font for code
-options(digits = 3)
-
-# default figure size
-knitr::opts_chunk$set(
-  fig.width=6.75, 
-  fig.height=6.75,
-  fig.align = &quot;center&quot;
-)</code></pre>
 <div id="analysis-of-movies---imdb-dataset" class="section level1">
 <h1>Analysis of movies - IMDB dataset</h1>
 <div id="loading-the-data" class="section level2">
 <h2>Loading the data</h2>
+<p>Lets look at our data and clean it first</p>
+<pre class="r"><code>movies &lt;- read_csv(here::here(&quot;data&quot;, &quot;movies.csv&quot;))
+glimpse(movies)</code></pre>
 <pre><code>## Rows: 2,961
 ## Columns: 11
 ## $ title               &lt;chr&gt; &quot;Avatar&quot;, &quot;Titanic&quot;, &quot;Jurassic World&quot;, &quot;The Aveng…
@@ -43,6 +33,7 @@ knitr::opts_chunk$set(
 ## $ votes               &lt;dbl&gt; 886204, 793059, 418214, 995415, 1676169, 534658, …
 ## $ reviews             &lt;dbl&gt; 3777, 2843, 1934, 2425, 5312, 3917, 1752, 1752, 3…
 ## $ rating              &lt;dbl&gt; 7.9, 7.7, 7.0, 8.1, 9.0, 6.5, 8.7, 7.5, 8.5, 7.2,…</code></pre>
+<pre class="r"><code>skim(movies)</code></pre>
 <table>
 <caption>(#tab:load_movies)Data summary</caption>
 <tbody>
@@ -268,12 +259,23 @@ knitr::opts_chunk$set(
 </tr>
 </tbody>
 </table>
+<pre class="r"><code># Counting missing values in the data
+anyNA(movies)</code></pre>
 <pre><code>## [1] FALSE</code></pre>
+<pre class="r"><code># Checking for duplicates
+dupes &lt;- movies %&gt;%
+  select(title, director, year, duration) %&gt;%
+  duplicated()
+
+table(dupes)[&quot;TRUE&quot;]</code></pre>
 <pre><code>## TRUE 
 ##   54</code></pre>
+<pre class="r"><code># Creating a cleaned dataset
+movies_clean &lt;- movies[!dupes,]</code></pre>
 </div>
 <div id="finding-the-number-of-movies-by-genre" class="section level2">
 <h2>Finding the number of movies by genre</h2>
+<p>The most popular genre is Comedy!</p>
 <pre class="r"><code>movies_clean %&gt;%
   group_by(genre) %&gt;%
   count(sort=TRUE)</code></pre>
@@ -301,6 +303,14 @@ knitr::opts_chunk$set(
 </div>
 <div id="finding-the-return-on-budget-by-genre" class="section level2">
 <h2>Finding the return on budget by genre</h2>
+<p>Which genre of movies has the highest return of the budget used?</p>
+<pre class="r"><code>movies_by_ratio &lt;- movies_clean %&gt;%
+  group_by(genre)
+summarise(movies_by_ratio, 
+          mean_gross = mean(gross), 
+          mean_budget = mean(budget), 
+          return_on_budget = mean_gross/mean_budget) %&gt;%
+arrange(desc(return_on_budget))</code></pre>
 <pre><code>## # A tibble: 17 x 4
 ##    genre       mean_gross mean_budget return_on_budget
 ##    &lt;chr&gt;            &lt;dbl&gt;       &lt;dbl&gt;            &lt;dbl&gt;
@@ -324,6 +334,19 @@ knitr::opts_chunk$set(
 </div>
 <div id="finding-the-top-15-directors-by-gross-earnings" class="section level2">
 <h2>Finding the top 15 directors by gross earnings</h2>
+<p>Lets look at who earns the most</p>
+<pre class="r"><code>movies_director &lt;- movies_clean %&gt;%
+  group_by(director) %&gt;%
+  summarise(total_gross = sum(gross, na.rm=TRUE), 
+            mean_gross = mean(gross, na.rm=TRUE),
+            median_gross = median(gross,na.rm=TRUE),
+            sd_gross = sd(gross, na.rm=TRUE),
+            count = n()) %&gt;%
+  arrange(desc(total_gross))
+
+top15_director &lt;- head(movies_director,15)
+
+top15_director</code></pre>
 <pre><code>## # A tibble: 15 x 6
 ##    director          total_gross mean_gross median_gross   sd_gross count
 ##    &lt;chr&gt;                   &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt;      &lt;dbl&gt; &lt;int&gt;
@@ -345,6 +368,15 @@ knitr::opts_chunk$set(
 </div>
 <div id="summary-statistics-of-movie-ratings-by-genre-and-plotting-a-histogram" class="section level2">
 <h2>Summary statistics of movie ratings by genre and plotting a histogram</h2>
+<pre class="r"><code>movies_ratings &lt;- movies_clean %&gt;%
+  group_by(genre) %&gt;%
+  summarise(mean_rating = mean(rating, na.rm=TRUE),
+            median_rating = median(rating, na.rm=TRUE),
+            max_rating = max(rating, na.rm=TRUE), 
+            min_rating = min(rating, na.rm=TRUE), 
+            sd_rating = sd(rating, na.rm=TRUE))
+
+movies_ratings</code></pre>
 <pre><code>## # A tibble: 17 x 6
 ##    genre       mean_rating median_rating max_rating min_rating sd_rating
 ##    &lt;chr&gt;             &lt;dbl&gt;         &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;
@@ -365,20 +397,37 @@ knitr::opts_chunk$set(
 ## 15 Sci-Fi             6.66          6.4         8.2        5       1.09 
 ## 16 Thriller           4.8           4.8         4.8        4.8    NA    
 ## 17 Western            5.70          5.70        7.3        4.1     2.26</code></pre>
-<p><img src="/blogs/blog7_files/figure-html/unnamed-chunk-3-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(movies, 
+       aes(x = rating)) + 
+  geom_histogram() + 
+  scale_y_log10() + 
+  facet_wrap(~ genre) +
+  theme_economist_white()</code></pre>
+<p><img src="/blogs/project_alcohol/blog7_files/figure-html/graph562-1.png" width="648" style="display: block; margin: auto;" /></p>
 </div>
-<div id="use-ggplot-to-answer-the-following" class="section level2">
-<h2>Use <code>ggplot</code> to answer the following</h2>
+<div id="does-the-number-of-fb-likes-influence-gross-earnings" class="section level2">
+<h2>Does the number of FB likes influence gross earnings?</h2>
 <ul>
-<li>Examine the relationship between <code>gross</code> and <code>cast_facebook_likes</code>. Produce a scatterplot and write one sentence discussing whether the number of facebook likes that the cast has received is likely to be a good predictor of how much money a movie will make at the box office. What variable are you going to map to the Y- and X- axes?</li>
+<li>We want to examine the relationship between <code>gross</code> and <code>cast_facebook_likes</code>. We will produce a scatterplot and discuss whether the number of facebook likes that the cast has received is likely to be a good predictor of how much money a movie will make at the box office.</li>
 </ul>
-<p><img src="/blogs/blog7_files/figure-html/unnamed-chunk-4-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(movies_clean, 
+       aes(x = cast_facebook_likes, 
+          y = gross)) + 
+  geom_point() + 
+  geom_smooth(method=lm) +  
+  scale_x_log10()  + 
+  scale_y_log10() + 
+  theme_economist_white() +
+  NULL</code></pre>
+<p><img src="/blogs/project_alcohol/blog7_files/figure-html/graph123-1.png" width="648" style="display: block; margin: auto;" /></p>
 </div>
-<div id="comment-gross_fblikes" class="section level2">
-<h2>Comment gross_fblikes</h2>
+<div id="comment-on-the-findings" class="section level2">
+<h2>Comment on the findings</h2>
+<blockquote>
 <p>We chose the Gross as the Y-variable and the Facebook Likes as the X-variable because we believed Gross to be the dependent variable and Facebook Likes the independent one. On average, the number of facebook likes seems to be a good predictor of how well a movie will fare in the box office, however, there are many data points which lie outside this observation and which prove that this isn’t always the case.</p>
+</blockquote>
 <ul>
-<li>Examine the relationship between <code>gross</code> and <code>budget</code>. Produce a scatterplot and write one sentence discussing whether budget is likely to be a good predictor of how much money a movie will make at the box office.</li>
+<li>No we will produce a scatterplot and doscuss whether budget is likely to be a good predictor of how much money a movie will make at the box office.</li>
 </ul>
 <pre class="r"><code>ggplot(movies_clean, 
        aes(x = budget, 
@@ -387,8 +436,9 @@ knitr::opts_chunk$set(
   geom_smooth(method=lm) +  
   scale_x_log10()  + 
   scale_y_log10() + 
+  theme_economist_white() +
   NULL</code></pre>
-<p><img src="/blogs/blog7_files/figure-html/gross_on_budget-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p><img src="/blogs/project_alcohol/blog7_files/figure-html/gross_on_budget-1.png" width="648" style="display: block; margin: auto;" /></p>
 </div>
 <div id="comment-gross_budget" class="section level2">
 <h2>Comment gross_budget</h2>
@@ -402,8 +452,9 @@ knitr::opts_chunk$set(
   geom_smooth(method=lm) +  
   scale_x_log10()  + 
   scale_y_log10() + 
+  theme_economist_white() +
   NULL</code></pre>
-<p><img src="/blogs/blog7_files/figure-html/gross_on_rating-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p><img src="/blogs/project_alcohol/blog7_files/figure-html/gross_on_rating-1.png" width="648" style="display: block; margin: auto;" /></p>
 </div>
 <div id="comment-gross_imdb" class="section level2">
 <h2>Comment Gross_IMDB</h2>

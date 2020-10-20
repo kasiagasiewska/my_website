@@ -12,7 +12,7 @@ title: Movies Analysis
 ---
 
 
-```{r, setup}
+```{r, setup, echo=FALSE}
 knitr::opts_chunk$set(
   message = FALSE, 
   warning = FALSE, 
@@ -44,9 +44,11 @@ library(tidyquant)
 
 # Analysis of movies - IMDB dataset
 
-## Loading the data  
+## Loading the data 
 
-```{r,load_movies, warning=FALSE, echo=FALSE, message=FALSE}
+Lets look at our data and clean it first
+
+```{r,load_movies}
 
 movies <- read_csv(here::here("data", "movies.csv"))
 glimpse(movies)
@@ -69,6 +71,8 @@ movies_clean <- movies[!dupes,]
 
 ## Finding the number of movies by genre
 
+The most popular genre is Comedy!
+
 ```{r, clean_up}
 
 movies_clean %>%
@@ -79,7 +83,9 @@ movies_clean %>%
 
 ## Finding the return on budget by genre
 
-```{r, echo=FALSE}
+Which genre of movies has the highest return of the budget used?
+
+```{r, table73246}
 
 movies_by_ratio <- movies_clean %>%
   group_by(genre)
@@ -93,7 +99,9 @@ arrange(desc(return_on_budget))
 
 ## Finding the top 15 directors by gross earnings
 
-```{r, echo=FALSE}
+Lets look at who earns the most
+
+```{r, table87534}
 
 movies_director <- movies_clean %>%
   group_by(director) %>%
@@ -112,7 +120,7 @@ top15_director
 
 ## Summary statistics of movie ratings by genre and plotting a histogram
 
-```{r, echo=FALSE}
+```{r, graph562}
 
 movies_ratings <- movies_clean %>%
   group_by(genre) %>%
@@ -128,15 +136,16 @@ ggplot(movies,
        aes(x = rating)) + 
   geom_histogram() + 
   scale_y_log10() + 
-  facet_wrap(~ genre)
+  facet_wrap(~ genre) +
+  theme_economist_white()
 
 ```
 
-## Use `ggplot` to answer the following
+## Does the number of FB likes influence gross earnings?
 
-  - Examine the relationship between `gross` and `cast_facebook_likes`. Produce a scatterplot and write one sentence discussing whether the number of facebook likes that the cast has received is likely to be a good predictor of how much money a movie will make at the box office. What variable are you going to map to the Y- and X- axes?
+  - We want to examine the relationship between `gross` and `cast_facebook_likes`. We will produce a scatterplot and discuss whether the number of facebook likes that the cast has received is likely to be a good predictor of how much money a movie will make at the box office. 
   
-```{r, echo=FALSE}
+```{r, graph123}
 ggplot(movies_clean, 
        aes(x = cast_facebook_likes, 
           y = gross)) + 
@@ -144,15 +153,16 @@ ggplot(movies_clean,
   geom_smooth(method=lm) +  
   scale_x_log10()  + 
   scale_y_log10() + 
+  theme_economist_white() +
   NULL
 ```
 
-## Comment gross_fblikes
+## Comment on the findings
 
-We chose the Gross as the Y-variable and the Facebook Likes as the X-variable because we believed Gross to be the dependent variable and Facebook Likes the independent one. On average, the number of facebook likes seems to be a good predictor of how well a movie will fare in the box office, however, there are many data points which lie outside this observation and which prove that this isn't always the case.  
+> We chose the Gross as the Y-variable and the Facebook Likes as the X-variable because we believed Gross to be the dependent variable and Facebook Likes the independent one. On average, the number of facebook likes seems to be a good predictor of how well a movie will fare in the box office, however, there are many data points which lie outside this observation and which prove that this isn't always the case.  
 
 
-  - Examine the relationship between `gross` and `budget`. Produce a scatterplot and write one sentence discussing whether budget is likely to be a good predictor of how much money a movie will make at the box office.
+  - No we will produce a scatterplot and doscuss whether budget is likely to be a good predictor of how much money a movie will make at the box office.
 
 ```{r, gross_on_budget}
 ggplot(movies_clean, 
@@ -162,12 +172,13 @@ ggplot(movies_clean,
   geom_smooth(method=lm) +  
   scale_x_log10()  + 
   scale_y_log10() + 
+  theme_economist_white() +
   NULL
 ```
 
 ## Comment gross_budget
 
->The tendency seems to indicate that the bigger the budget, the higher the movie will gross. This is especially true for movies with high budgets as we see a concentration of datapoints at that level. Some dataponts indicate that it is not always the case as many movies fall outside this high budget - high gross correlation. However, the overarching sense is that budget is likely to be a good predictor of how much money a movie will make at the box office.
+> The tendency seems to indicate that the bigger the budget, the higher the movie will gross. This is especially true for movies with high budgets as we see a concentration of datapoints at that level. Some dataponts indicate that it is not always the case as many movies fall outside this high budget - high gross correlation. However, the overarching sense is that budget is likely to be a good predictor of how much money a movie will make at the box office.
   
 
 ```{r, gross_on_rating}
@@ -178,6 +189,7 @@ ggplot(movies_clean,
   geom_smooth(method=lm) +  
   scale_x_log10()  + 
   scale_y_log10() + 
+  theme_economist_white() +
   NULL
 ```
 

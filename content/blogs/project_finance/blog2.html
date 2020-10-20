@@ -13,21 +13,9 @@ title: Stock Returns
 
 
 
-<pre class="r"><code>knitr::opts_chunk$set(
-  message = FALSE, 
-  warning = FALSE, 
-  tidy=FALSE,     # display code as typed
-  size=&quot;small&quot;)   # slightly smaller font for code
-options(digits = 3)
-
-# default figure size
-knitr::opts_chunk$set(
-  fig.width=6.75, 
-  fig.height=6.75,
-  fig.align = &quot;center&quot;
-)</code></pre>
 <div id="returns-of-financial-stocks" class="section level1">
 <h1>Returns of financial stocks</h1>
+<p>First let us look at the data</p>
 <pre class="r"><code>nyse &lt;- read_csv(here::here(&quot;data&quot;,&quot;nyse.csv&quot;))
 glimpse(nyse)</code></pre>
 <pre><code>## Rows: 508
@@ -155,6 +143,7 @@ glimpse(nyse)</code></pre>
 </table>
 <div id="creating-a-graph-to-summarise-the-companies-by-sector" class="section level2">
 <h2>Creating a graph to summarise the companies by sector</h2>
+<p>Now lets summarise by showing the number of companies in each sector and plot it</p>
 <pre class="r"><code>#Showing a table of NYSE companies grouped by sector, in descending order
 companies_by_sector &lt;- nyse %&gt;%
   group_by(sector) %&gt;%
@@ -186,10 +175,11 @@ ggplot(companies_by_sector,
   geom_col() + 
   theme_economist_white() + 
   scale_x_continuous(expand = c(0,0))</code></pre>
-<p><img src="/blogs/project_stocks/blog2_files/figure-html/plotting-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p><img src="/blogs/project_finance/blog2_files/figure-html/plotting-1.png" width="648" style="display: block; margin: auto;" /></p>
 </div>
 <div id="finding-stock-prices-for-8-securities" class="section level2">
 <h2>Finding stock prices for 8 securities</h2>
+<p>Lets pick a few stocks that we like! What are their daily return?</p>
 <pre class="r"><code>myStocks &lt;- c(&quot;AAPL&quot;,&quot;JPM&quot;,&quot;DIS&quot;,&quot;DPZ&quot;,&quot;ANF&quot;,&quot;TSLA&quot;,&quot;XOM&quot;,&quot;SPY&quot; ) %&gt;%
   tq_get(get  = &quot;stock.prices&quot;,
          from = &quot;2010-01-01&quot;,
@@ -258,6 +248,7 @@ myStocks_daily_returns</code></pre>
 </div>
 <div id="summarising-monthly-returns" class="section level2">
 <h2>Summarising monthly returns</h2>
+<p>Lets now see the monthly returns as well.</p>
 <pre class="r"><code>monthly_returns &lt;- myStocks_monthly_returns %&gt;%
   summarise(mean_return = mean(monthly_returns, 
                                na.rm=TRUE), 
@@ -295,14 +286,16 @@ monthly_returns</code></pre>
   scale_y_continuous (breaks = scales::pretty_breaks(n = 8)) + 
   facet_wrap(~symbol, 
              scales=&#39;fixed&#39;) +
-  theme_clean()</code></pre>
-<p><img src="/blogs/project_stocks/blog2_files/figure-html/density_monthly_returns-1.png" width="648" style="display: block; margin: auto;" /></p>
+  theme_clean() +
+  theme_economist_white()</code></pre>
+<p><img src="/blogs/project_finance/blog2_files/figure-html/density_monthly_returns-1.png" width="648" style="display: block; margin: auto;" /></p>
 <blockquote>
 <p>We can infer that Tesla (TSLA) is the most risky stock given it has the highest standard deviation, displayed by its monthly returns having the fattest tails and shortest peak at the mean value. By contrast, SPY (S&amp;P500 ETF) appears the least risky stock given it displays the lowest standard deviation when comparing monthly returns.</p>
 </blockquote>
 </div>
 <div id="plotting-risk-and-reward-for-a-stock" class="section level2">
 <h2>Plotting risk and reward for a stock</h2>
+<p>What is the connection between risk and reward for our stocks?</p>
 <pre class="r"><code>library(ggrepel)
 
 risk_return &lt;- ggplot (monthly_returns, 
@@ -317,10 +310,11 @@ p &lt;- risk_return +
        x=&quot;Standard Deviation of Return&quot;,
        y = &quot;Expected Monthly Return&quot;) + 
   geom_smooth(method=lm) + 
-  theme_calc()
+  theme_calc() +
+  theme_economist_white()
 
 p</code></pre>
-<p><img src="/blogs/project_stocks/blog2_files/figure-html/risk_return_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p><img src="/blogs/project_finance/blog2_files/figure-html/risk_return_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
 <blockquote>
 <p>From the graph we can see that ANF is the furthest below the trend line, indicating that its returns are much less than expected given the risk a shareholders bears when holding this stock. On the other hand, DPZ seems to strongly outperform given its riskiness.</p>
 </blockquote>

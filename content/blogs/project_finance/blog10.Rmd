@@ -130,7 +130,7 @@ ggplot(data = yield_curve,
   theme_bw() + 
 #Adding labels to the graph
   labs(title = "Yields on U.S. Treasury rates since 1960", x = "", y = "%", caption = "Source:St. Louis Federal Reserve Economic Database (FRED)")  + 
-  theme_economist()
+  theme_economist_white()
 
   
 ```
@@ -161,7 +161,7 @@ ggplot(yield_curve_two,
   labs(title = "US Yield Curve", 
        x = "Maturity", 
        y = "Yield(%)", 
-       caption = "Source:St. Louis Federal Reserve Economic Database (FRED)")   + theme_economist()
+       caption = "Source:St. Louis Federal Reserve Economic Database (FRED)")   + theme_economist_white()
 
   
 ```
@@ -195,7 +195,7 @@ ggplot(yield_curve_legend,
   labs(title = "Yields on 3-month and 10-year Treasury rates since 1999", 
        x = "", 
        y = "%", 
-       caption = "Source:St. Louis Federal Reserve Economic Database (FRED)")  + theme_economist()
+       caption = "Source:St. Louis Federal Reserve Economic Database (FRED)")  + theme_economist_white()
 
   
 ```
@@ -269,7 +269,7 @@ ggplot(yield_curve_wide,
        caption = "Source:St. Louis Federal Reserve Economic Database (FRED)") +
 #Adapting scale
   scale_x_date(date_breaks="2 years",date_labels="%Y") + 
-  theme_economist()
+  theme_economist_white()
   
   
 

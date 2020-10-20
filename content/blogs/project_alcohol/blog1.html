@@ -13,19 +13,6 @@ title: Alcohol Consumption
 
 
 
-<pre class="r"><code>knitr::opts_chunk$set(
-  message = FALSE, 
-  warning = FALSE, 
-  tidy=FALSE,     # display code as typed
-  size=&quot;small&quot;)   # slightly smaller font for code
-options(digits = 3)
-
-# default figure size
-knitr::opts_chunk$set(
-  fig.width=6.75, 
-  fig.height=6.75,
-  fig.align = &quot;center&quot;
-)</code></pre>
 <div id="where-do-people-drink-the-most-beer-wine-and-spirits" class="section level1">
 <h1>Where Do People Drink The Most Beer, Wine And Spirits?</h1>
 <p>Back in 2014, <a href="https://fivethirtyeight.com/features/dear-mona-followup-where-do-people-drink-the-most-beer-wine-and-spirits/">fivethiryeight.com</a> published an article on alchohol consumption in different countries.</p>
@@ -181,6 +168,8 @@ data(drinks)</code></pre>
 </tr>
 </tbody>
 </table>
+<div id="which-countries-drink-the-most-beer" class="section level2">
+<h2>Which countries drink the most beer?</h2>
 <pre class="r"><code>desc_beer &lt;- drinks %&gt;% 
   arrange(desc(beer_servings))
 
@@ -197,6 +186,9 @@ ggplot(top25_beer,
       theme_clean() + 
            NULL</code></pre>
 <p><img src="/blogs/project_alcohol/blog1_files/figure-html/beer_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="which-countries-drink-the-most-wine" class="section level2">
+<h2>Which countries drink the most wine?</h2>
 <pre class="r"><code>desc_wine &lt;- drinks %&gt;% 
   arrange(desc(wine_servings))
 
@@ -213,6 +205,9 @@ ggplot(top25_wine,
   theme_clean() + 
   NULL</code></pre>
 <p><img src="/blogs/project_alcohol/blog1_files/figure-html/wine_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="which-countries-drink-the-most-spirit" class="section level2">
+<h2>Which countries drink the most spirit?</h2>
 <pre class="r"><code>desc_spirit &lt;- drinks %&gt;% 
   arrange( desc(spirit_servings) )
 
@@ -229,6 +224,9 @@ ggplot (top25_spirit,
   theme_clean() + 
   NULL</code></pre>
 <p><img src="/blogs/project_alcohol/blog1_files/figure-html/spirit_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="comment-on-the-findings" class="section level2">
+<h2>Comment on the findings</h2>
 <blockquote>
 <p>In the first plot we can see that Namibia has the highest yearly consumption of beer per capita. Beer is one of Namibia’s most iconic commodity and their top quality brewing is a legacy of German colonialism.The second most beer-loving country is Czech Republic, known for its unique brewing methods and prevalent drinking culture.</p>
 </blockquote>
@@ -238,4 +236,5 @@ ggplot (top25_spirit,
 <blockquote>
 <p>Last but not least, looking at the third plot we can see that Grenada and Belarus are the most spirit-loving countries. We can safely assume that Grenadians prefer to drink rum while Belarusians enjoy their vodka.</p>
 </blockquote>
+</div>
 </div>

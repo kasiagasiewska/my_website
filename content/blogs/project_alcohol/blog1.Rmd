@@ -12,7 +12,7 @@ title: Alcohol Consumption
 ---
 
 
-```{r, setup}
+```{r, setup, echo=FALSE}
 knitr::opts_chunk$set(
   message = FALSE, 
   warning = FALSE, 
@@ -51,12 +51,14 @@ library(fivethirtyeight)
 data(drinks)
 ```
 
-We have one column with character data which contains country names and four columns with numerical data which contains the amount of each type of alcohol consumed in these countries. There are no missing variables.
+We have one column with character data which contains country names and four columns with numerical data which contains the amount of each type of alcohol consumed in these countries. There are no missing variables. 
 
 ```{r glimpse_skim_data}
 glimpse(drinks)
 skim(drinks)
 ```
+
+## Which countries drink the most beer?
 
 ```{r beer_plot}
 desc_beer <- drinks %>% 
@@ -76,6 +78,8 @@ ggplot(top25_beer,
            NULL
 
 ```
+
+## Which countries drink the most wine?
 
 ```{r wine_plot}
 
@@ -98,6 +102,8 @@ ggplot(top25_wine,
 
 ```
 
+## Which countries drink the most spirit?
+
 ```{r spirit_plot}
 
 desc_spirit <- drinks %>% 
@@ -117,6 +123,8 @@ ggplot (top25_spirit,
   NULL
 
 ```
+
+## Comment on the findings
 
 >In the first plot we can see that Namibia has the highest yearly consumption of beer per capita. Beer is one of Namibia's most iconic commodity and their top quality brewing is a legacy of German colonialism.The second most beer-loving country is Czech Republic, known for its unique brewing methods and prevalent drinking culture. 
 

@@ -42,7 +42,7 @@ library(broom)
 library(tidyquant)
 library(infer)
 library(openintro)
-library(kableExtra)
+library(tidyquant)
 ```
 
 # Omega Group plc- Pay Discrimination

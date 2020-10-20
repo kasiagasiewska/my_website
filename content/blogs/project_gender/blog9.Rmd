@@ -49,11 +49,18 @@ The [General Social Survey (GSS)](http://www.gss.norc.org/) gathers data on Amer
 
 In this assignment we analyse data from the **2016 GSS sample data**, using it to estimate values of *population parameters* of interest about US adults. 
 
-Please find below variables we will be testing
+Please find below variables we will be testing: 
+
 * hours and minutes spent on email weekly. The responses to these questions are recorded in the `emailhr` and `emailmin` variables. 
-* `snapchat`, `instagrm`, `twitter`: whether respondents used these social media in 2016
-* `sex`: Female - Male
-* `degree`: highest education level attained
+
+* `snapchat`, `instagrm`, `twitter`: whether respondents used these social media in 2016 
+
+* `sex`: Female - Male 
+
+* `degree`: highest education level attained 
+
+
+Lets look at the data first
 
 ```{r, read_gss_data, cache=TRUE}
 gss <- read_csv(here::here("data", "smallgss2016.csv"), 
@@ -65,6 +72,8 @@ skim(gss)
 ```
 
 ## Instagram and Snapchat, by sex
+
+Who uses Instagram and Snapchat more - men or women?
 
 ```{r, insta snapchat, cache=TRUE}
 
@@ -117,6 +126,8 @@ ci_gender1
 ```
 
 ## Twitter, by education level
+
+Is Twitter usage related to education level?
 
 ```{r, twitter, cache=TRUE}
 
@@ -179,6 +190,8 @@ twitter_CI_summary
 
 
 ## Email usage
+
+How much time do we spend on our emails during the week?
 
 ```{r, email, cache=TRUE}
 

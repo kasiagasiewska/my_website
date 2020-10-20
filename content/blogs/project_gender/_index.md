@@ -6,4 +6,4 @@ slug: blogs
 title: Society
 ---
 
-My blogs about differences in average salary for men compared to women at Omega Group Plc
+My blogs about gender gap and social media usage.

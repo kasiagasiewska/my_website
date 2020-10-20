@@ -6,4 +6,4 @@ slug: blogs
 title: Gross Domestic Product
 ---
 
-My blog about GDP evolution in the US, India and Germany
+My blogs about global trends and GDP components.

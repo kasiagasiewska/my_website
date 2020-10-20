@@ -6,4 +6,4 @@ slug: blogs
 title: Finance
 ---
 
-My blogs about risk and return of financial stocks
+My blogs about risk/return of financial stocks and inverted yield curve.

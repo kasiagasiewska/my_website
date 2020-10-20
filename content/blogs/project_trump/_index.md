@@ -6,4 +6,4 @@ slug: blogs
 title: Politics
 ---
 
-My blogs about approval/disapproval rate of Donald Trump
+My blogs about Donald Trump and 2016 elections.

@@ -6,4 +6,4 @@ slug: blogs
 title: Entertainment
 ---
 
-My blog about movies and alcohol consumption
+My blogs about movies and alcohol consumption

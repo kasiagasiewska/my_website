@@ -6,4 +6,4 @@ slug: blogs
 title: Climate
 ---
 
-My blogs about climate change and temperature anomalies
+My blogs about temperature anomalies and COVID mortality rates.
